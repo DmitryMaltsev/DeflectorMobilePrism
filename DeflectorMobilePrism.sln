@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31613.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeflectorMobilePrism", "DeflectorMobilePrism\DeflectorMobilePrism.csproj", "{31EF99F4-F26B-43A5-9DD6-2BECCAA44E75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeflectorMobilePrism", "DeflectorMobilePrism\DeflectorMobilePrism.csproj", "{31EF99F4-F26B-43A5-9DD6-2BECCAA44E75}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeflectorMobilePrism.Android", "DeflectorMobilePrism.Android\DeflectorMobilePrism.Android.csproj", "{2D7D1D6A-1D6E-4D35-867D-9F420C7517D1}"
 EndProject
@@ -13,7 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeflectorMobilePrism.UWP", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{706AE90D-64E1-4AC4-9867-2AFB48E51C12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OperationsModule", "..\OperationsModule\OperationsModule.csproj", "{3EE6DA5C-4A92-4E37-9043-D49E4878457E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OperationsModule", "..\OperationsModule\OperationsModule.csproj", "{3EE6DA5C-4A92-4E37-9043-D49E4878457E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{DF6662D1-651C-4FC1-A8D5-A2F47613D527}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

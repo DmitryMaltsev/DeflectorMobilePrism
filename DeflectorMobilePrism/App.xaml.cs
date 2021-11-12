@@ -24,7 +24,7 @@ namespace DeflectorMobilePrism
         {
             InitializeComponent();
 
-            await NavigationService.NavigateAsync("NavigationPage/HandView");
+            await NavigationService.NavigateAsync("MainPage");
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
@@ -33,7 +33,7 @@ namespace DeflectorMobilePrism
 
             containerRegistry.RegisterForNavigation<NavigationPage>();
             containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
-            containerRegistry.RegisterForNavigation<HandView, HandViewModel>();
+            containerRegistry.RegisterForNavigation<ChangeModes, ChangeModesViewModel>();
         }
     }
 }
