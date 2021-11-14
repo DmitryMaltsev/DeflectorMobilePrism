@@ -1,6 +1,8 @@
 using DeflectorMobilePrism.ViewModels;
 using DeflectorMobilePrism.Views;
 
+using IServices;
+
 using OperationsModule.ViewModels;
 using OperationsModule.Views;
 
@@ -30,7 +32,8 @@ namespace DeflectorMobilePrism
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterSingleton<IAppInfo, AppInfoImplementation>();
-
+            containerRegistry.RegisterSingleton<IBlueToothService, IBlueToothService>();
+            containerRegistry.RegisterSingleton<ISensorsDataRepository, ISensorsDataRepository>();
             containerRegistry.RegisterForNavigation<NavigationPage>();
             containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
             containerRegistry.RegisterForNavigation<ChangeModes, ChangeModesViewModel>();

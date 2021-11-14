@@ -4,5 +4,17 @@
              xmlns:prism="http://prismlibrary.com"
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="OperationsModule.Views.ChangeModes">
-  
+
+    <StackLayout>
+        <Frame BackgroundColor="Blue">
+            <StackLayout>
+                <Label Text="{Binding ISensorsDataRepository.CurrentTemperature}"/>
+                <Label Text="{Binding ISensorsDataRepository.CurrentPressure}" />
+                <Label Text="{Binding ISensorsDataRepository.Mode}" />
+            </StackLayout>
+        </Frame>
+        <Picker ItemsSource="{Binding ISensorsDataRepository.Modes}" SelectedItem="{Binding ISensorDataRepository.Mode}" />
+        <Button Text="Выбрать режим" Command="{Binding ChangeModeCommand}"/>
+    </StackLayout>
 </ContentPage>
+    
