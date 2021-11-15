@@ -13,7 +13,7 @@ using Xamarin.Forms;
 namespace Services
 {
     public class BlueToothService : IBlueToothService
-    {
+    { 
 
         public async Task<double[]> RecieveSensorsData(BluetoothDeviceModel selectedDevice)
         {
