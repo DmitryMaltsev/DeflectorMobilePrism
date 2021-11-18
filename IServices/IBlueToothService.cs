@@ -5,7 +5,7 @@ namespace IServices
 {
     public interface IBlueToothService
     {
-        Task<double[]> RecieveSensorsData(BluetoothDeviceModel selectedDevice);
+        (string, double[]) ResultRecieveSensorData(BluetoothDeviceModel selectedDevice);
         Task<string> SendMode(BluetoothDeviceModel selectedDevice, string sendingParameters);
     }
 }

@@ -14,11 +14,23 @@ namespace Services
 {
     public class BlueToothService : IBlueToothService
     {
-
-        public async Task<double[]> RecieveSensorsData(BluetoothDeviceModel selectedDevice)
+        private string message;
+        private double[] currentParameters;
+        public BlueToothService()
         {
-            string message = "";
-            double[] currentParameters = new double[3];
+            message = "";
+            currentParameters = new double[3];
+        }
+        public (string, double[]) ResultRecieveSensorData(BluetoothDeviceModel selectedDevice)
+        {
+            Task recieveTask = new Task(() => RecieveSensorsData(selectedDevice));
+            recieveTask.Start();
+            recieveTask.ConfigureAwait(true);
+            return (message, currentParameters);
+        }
+
+        private async void RecieveSensorsData(BluetoothDeviceModel selectedDevice)
+        {
             if (selectedDevice != null)
             {
                 byte[] buffer = new byte[12];
@@ -55,7 +67,6 @@ namespace Services
                     }
                 }
             }
-            return ( currentParameters);
         }
 
         public async Task<string> SendMode(BluetoothDeviceModel selectedDevice, string sendingParameters)
