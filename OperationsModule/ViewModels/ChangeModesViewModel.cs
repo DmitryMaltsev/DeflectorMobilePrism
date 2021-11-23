@@ -40,9 +40,10 @@ namespace OperationsModule.ViewModels
 
         public void OnNavigatedTo(INavigationParameters parameters)
         {
-            _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("ChangeModes");         
-            Task bluetoothRecieveTask = new Task(() => RecieveSensorsData(_selectedDevice));
+            _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("SelectedDevice");
+            RecieveSensorsData(_selectedDevice);
             Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);
+            //  bluetoothRecieveTask.Start();
         }
 
         private bool TimerTickCallBack()

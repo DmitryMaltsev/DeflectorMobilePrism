@@ -10,6 +10,12 @@ namespace Services
 {
     public class SensorsDataRepository : BindableBase, ISensorsDataRepository
     {
+        public SensorsDataRepository()
+        {
+            Modes=new[] { "По температуре", "По давлению", "Ручной" };
+            Mode = Modes[0];
+        }
+
         private double _currentTemperature;
         public double CurrentTemperature
         {
@@ -31,7 +37,7 @@ namespace Services
             set { SetProperty(ref _currentPower, value); }
         }
 
-        private string[] _modes = { "По температуре", "По давлению", "Ручной" };
+        private string[] _modes;
         public string[] Modes
         {
             get { return _modes; }

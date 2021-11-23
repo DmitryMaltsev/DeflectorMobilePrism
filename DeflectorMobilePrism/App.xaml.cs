@@ -9,6 +9,8 @@ using OperationsModule.Views;
 using Prism;
 using Prism.Ioc;
 
+using Services;
+
 using Xamarin.Essentials.Implementation;
 using Xamarin.Essentials.Interfaces;
 using Xamarin.Forms;
@@ -32,8 +34,8 @@ namespace DeflectorMobilePrism
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterSingleton<IAppInfo, AppInfoImplementation>();
-            containerRegistry.RegisterSingleton<IBlueToothService, IBlueToothService>();
-            containerRegistry.RegisterSingleton<ISensorsDataRepository, ISensorsDataRepository>();
+            containerRegistry.RegisterSingleton<IBlueToothService, BlueToothService>();
+            containerRegistry.RegisterSingleton<ISensorsDataRepository, SensorsDataRepository>();
             containerRegistry.RegisterForNavigation<NavigationPage>();
             containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
             containerRegistry.RegisterForNavigation<ChangeModes, ChangeModesViewModel>();
