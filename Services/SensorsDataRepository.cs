@@ -50,5 +50,30 @@ namespace Services
             get { return _mode; }
             set { SetProperty(ref _mode, value); }
         }
+
+        private int _decimalNum;
+        public int DecimalNum
+        {
+            get { return _decimalNum; }
+            set { SetProperty(ref _decimalNum, value); }
+        }
+
+        private int _unitNum;
+        public int UnitNum
+        {
+            get { return _unitNum; }
+            set { SetProperty(ref _unitNum, value); }
+        }
+
+        private bool _numsOn;
+        public bool NumsOn
+        {
+            get { return _numsOn; }
+            set { SetProperty(ref _numsOn, value); }
+        }
+
+
+
+
     }
 }

@@ -20,9 +20,41 @@ namespace OperationsModule.ViewModels
 {
     public class ChangeModesViewModel : BindableBase, INavigationAware
     {
+
         private BluetoothDeviceModel _selectedDevice { get; set; }
         private string _message = "";
         private double[] _currentParameters;
+        public ISensorsDataRepository SensorsDataRepository { get; }
+        public IBlueToothService BlueToothService { get; }
+
+        #region Delegates
+        private DelegateCommand _decimalOnCommand;
+        public DelegateCommand DecimalOnCommand =>
+            _decimalOnCommand ?? (_decimalOnCommand = new DelegateCommand(ExecuteDecimalOnCommand));
+
+        private DelegateCommand _decimalOffCommand;
+        public DelegateCommand DecimalOffCommand =>
+            _decimalOffCommand ?? (_decimalOffCommand = new DelegateCommand(ExecuteDecimalOffCommand));
+
+        private DelegateCommand _unitOnCommand;
+        public DelegateCommand UnitOnCommand =>
+            _unitOnCommand ?? (_unitOnCommand = new DelegateCommand(ExecuteUnitOnCommand));
+
+        private DelegateCommand _unitOffCommand;
+        public DelegateCommand UnitOffCommand =>
+            _unitOffCommand ?? (_unitOffCommand = new DelegateCommand(ExecuteUnitOffCommand));
+
+        private DelegateCommand _acceptPowerCommand;
+        public DelegateCommand AcceptPowerCommand =>
+            _acceptPowerCommand ?? (_acceptPowerCommand = new DelegateCommand(ExecuteAcceptPowerCommand));
+
+        private DelegateCommand _changeModeCommand;
+        public DelegateCommand ChangeModeCommand =>
+            _changeModeCommand ?? (_changeModeCommand = new DelegateCommand(ExecuteChangeModeCommand));
+
+
+        #endregion
+
         public ChangeModesViewModel(ISensorsDataRepository sensorsDataRepository, IBlueToothService blueToothService)
         {
             SensorsDataRepository = sensorsDataRepository;
@@ -30,13 +62,53 @@ namespace OperationsModule.ViewModels
             _currentParameters = new double[3];
         }
 
-        public ISensorsDataRepository SensorsDataRepository { get; }
-        public IBlueToothService BlueToothService { get; }
+        #region ExecuteMethods
 
-        public void OnNavigatedFrom(INavigationParameters parameters)
+        void ExecuteUnitOnCommand()
+        {
+
+            if (SensorsDataRepository.UnitNum < 9)
+            {
+                SensorsDataRepository.UnitNum += 1;
+            }
+        }
+
+        void ExecuteUnitOffCommand()
+        {
+            if (SensorsDataRepository.UnitNum > 0)
+            {
+                SensorsDataRepository.UnitNum -= 1;
+            }
+        }
+
+        void ExecuteDecimalOnCommand()
+        {
+            if (SensorsDataRepository.DecimalNum < 5)
+            {
+                SensorsDataRepository.DecimalNum += 1;
+            }
+        }
+
+        void ExecuteDecimalOffCommand()
+        {
+            if (SensorsDataRepository.DecimalNum > 0)
+            {
+                SensorsDataRepository.DecimalNum -= 1;
+            }
+        }
+
+        void ExecuteAcceptPowerCommand()
         {
 
         }
+
+        void ExecuteChangeModeCommand()
+        {
+            NumsButtonsIsActive();
+        }
+        #endregion
+
+
 
         public void OnNavigatedTo(INavigationParameters parameters)
         {
@@ -44,6 +116,17 @@ namespace OperationsModule.ViewModels
             RecieveSensorsData(_selectedDevice);
             Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);
             //  bluetoothRecieveTask.Start();
+            NumsButtonsIsActive();
+        }
+
+        public void OnNavigatedFrom(INavigationParameters parameters)
+        {
+
+        }
+
+        private void NumsButtonsIsActive()
+        {
+            _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn : SensorsDataRepository.NumsOn == false;
         }
 
         private bool TimerTickCallBack()

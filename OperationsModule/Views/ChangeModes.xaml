@@ -8,13 +8,13 @@
         <StackLayout Orientation="Vertical" BackgroundColor="Blue">
             <Label Text="{Binding SensorsDataRepository.CurrentTemperature, StringFormat='Текущая температура={0}'}" Margin="10" HorizontalOptions="Center" FontSize="18"/>
             <Label Text="{Binding SensorsDataRepository.CurrentPressure, StringFormat='Текущее давление={0}'}" Margin="10"  HorizontalOptions="Center"  FontSize="18"/>
+            <Label Text="{Binding SensorsDataRepository.CurrentPower, StringFormat='Текущая мощность={0}%'}" Margin="10"  HorizontalOptions="Center"  FontSize="18"/>
             <Label Text="{Binding SensorsDataRepository.Mode, StringFormat='Текущий режим={0}'}"  Margin="10"  HorizontalOptions="Center"  FontSize="18"/>
 
         </StackLayout>
-        <StackLayout BackgroundColor="Snow" Orientation="Vertical" HorizontalOptions="Center">
-            <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" 
-                    FontSize="24" Margin="10" WidthRequest="200"/>
-            <Button Text="Применить режим" Command="{Binding }" Margin="10" WidthRequest="150"/>
+        <StackLayout BackgroundColor="AliceBlue" Orientation="Vertical" HorizontalOptions="Center">
+            <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedItem="{Binding SensorsDataRepository.Mode}" HorizontalOptions="Center"/>
+            <Button Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="10"/>
         </StackLayout>
         <StackLayout>
             <Grid HorizontalOptions="Center" Margin="100,10,10,10">
@@ -29,13 +29,13 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
-                <Button  Grid.Row="0" Grid.Column="0" Text="+" />
-                <Label Grid.Row="1" Grid.Column="0" Text="0"  HorizontalOptions="Center" VerticalOptions="Center"/>
-                <Button  Grid.Row="2" Grid.Column="0" Text="-" />
-                <Button  Grid.Row="0" Grid.Column="1" Text="+" />
-                <Label Grid.Row="1" Grid.Column="1" Text="0"  HorizontalOptions="Center" VerticalOptions="Center"/>
-                <Button  Grid.Row="2" Grid.Column="1" Text="-" />
-                <Button  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Мощность (до 50%)" />
+                <Button  Grid.Row="0" Grid.Column="0" Text="+" Command="{Binding DecimalOnCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="{Binding SensorsDataRepository.DecimalNum}"  HorizontalOptions="Center" VerticalOptions="Center"/>
+                <Button  Grid.Row="2" Grid.Column="0" Text="-" Command="{Binding DecimalOffCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
+                <Button  Grid.Row="0" Grid.Column="1" Text="+" Command="{Binding UnitOnCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
+                <Label Grid.Row="1" Grid.Column="1" Text="{Binding SensorsDataRepository.UnitNum}"  HorizontalOptions="Center" VerticalOptions="Center"/>
+                <Button  Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding UnitOffCommand}"  IsEnabled="{Binding SensorsDataRepository.NumsOn}" />
+                <Button  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Применить" Command="{Binding AcceptPowerCommand}"/>
             </Grid>
         </StackLayout>
     </StackLayout>
