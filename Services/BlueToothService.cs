@@ -14,23 +14,14 @@ namespace Services
 {
     public class BlueToothService : IBlueToothService
     {
-        private string message;
-        private double[] currentParameters;
         public BlueToothService()
         {
-            message = "";
-            currentParameters = new double[3];
-        }
-        public (string, double[]) ResultRecieveSensorData(BluetoothDeviceModel selectedDevice)
-        {
-            Task recieveTask = new Task(() => RecieveSensorsData(selectedDevice));
-            recieveTask.Start();
-            recieveTask.ConfigureAwait(true);
-            return (message, currentParameters);
         }
 
-        private async void RecieveSensorsData(BluetoothDeviceModel selectedDevice)
+        public async Task<(double[], string)> RecieveSensorsData(BluetoothDeviceModel selectedDevice)
         {
+            double[] currentParameters = new double[3];
+            string message = "";
             if (selectedDevice != null)
             {
                 byte[] buffer = new byte[12];
@@ -40,25 +31,22 @@ namespace Services
 
                     if (await connection.RetryConnectAsync(retriesCount: 3))
                     {
-                        while (true)
-                        {
-                            if (!(await connection.RetryReciveAsync(buffer)).Succeeded)
-                            {
-                                message = "Can not send data";
-                                break;
-                            }
-                            else
-                            {
-                                if (buffer.Length > 0)
-                                {
-                                    string bufString = Encoding.UTF8.GetString(buffer);
-                                    string[] stringArray = bufString.Split('d');
-                                    currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                                    currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                                    currentParameters[2] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                                }
 
+                        if (!(await connection.RetryReciveAsync(buffer)).Succeeded)
+                        {
+                            message = "Can not send data";
+                        }
+                        else
+                        {
+                            if (buffer.Length > 0)
+                            {
+                                string bufString = Encoding.UTF8.GetString(buffer);
+                                string[] stringArray = bufString.Split('d');
+                                currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                                currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                                currentParameters[2] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
                             }
+
                         }
                     }
                     else
@@ -67,6 +55,8 @@ namespace Services
                     }
                 }
             }
+            return await Task.Run(() => (currentParameters, message));
+         //   return await Task.Run(() => message);
         }
 
         public async Task<string> SendMode(BluetoothDeviceModel selectedDevice, string sendingParameters)
@@ -84,6 +74,7 @@ namespace Services
                         char[] byteBuffer = sendingParameters.ToCharArray();
                         Encoding utf8 = Encoding.UTF8;
                         byte[] buffer = utf8.GetBytes(byteBuffer);
+
                         if (!await connection.RetryTransmitAsync(buffer, 0, buffer.Length))
                         {
                             message = "Can not send data";
@@ -95,7 +86,7 @@ namespace Services
                     }
                 }
             }
-            return message;
+            return await Task.Run(() => message);
         }
     }
 }

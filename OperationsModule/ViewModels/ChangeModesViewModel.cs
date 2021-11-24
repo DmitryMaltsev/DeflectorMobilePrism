@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -26,7 +27,7 @@ namespace OperationsModule.ViewModels
         private double[] _currentParameters;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
-
+        IBluetoothConnection connection;
         #region Delegates
         private DelegateCommand _decimalOnCommand;
         public DelegateCommand DecimalOnCommand =>
@@ -99,9 +100,16 @@ namespace OperationsModule.ViewModels
 
         void ExecuteAcceptPowerCommand()
         {
-
+            //  string symbols = SensorsDataRepository.DecimalNum.ToString() + SensorsDataRepository.UnitNum.ToString();
+            string symbols = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+            SendCommand(symbols);
         }
 
+        async void SendCommand(string symbols)
+        {
+
+            _message = await Task.Run(() => BlueToothService.SendMode(_selectedDevice, symbols));
+        }
         void ExecuteChangeModeCommand()
         {
             NumsButtonsIsActive();
@@ -109,20 +117,33 @@ namespace OperationsModule.ViewModels
         #endregion
 
 
+        public void OnNavigatedFrom(INavigationParameters parameters)
+        {
+
+        }
 
         public void OnNavigatedTo(INavigationParameters parameters)
         {
             _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("SelectedDevice");
-            RecieveSensorsData(_selectedDevice);
+            //  RecieveSensorsData(_selectedDevice);
+
+            RecieveData();
             Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);
             //  bluetoothRecieveTask.Start();
             NumsButtonsIsActive();
         }
 
-        public void OnNavigatedFrom(INavigationParameters parameters)
+        private async void RecieveData()
         {
 
+            //while (true)
+            //{
+            //    (_currentParameters, _message) = await Task.Run(() => BlueToothService.RecieveSensorsData(connection));
+            //    Thread.Sleep(100);
+            //}
+
         }
+
 
         private void NumsButtonsIsActive()
         {
@@ -135,75 +156,5 @@ namespace OperationsModule.ViewModels
             SensorsDataRepository.CurrentPressure = _currentParameters[1];
             return true;
         }
-
-        private async void RecieveSensorsData(BluetoothDeviceModel selectedDevice)
-        {
-            if (selectedDevice != null)
-            {
-                byte[] buffer = new byte[12];
-                IBluetoothAdapter adapter = DependencyService.Resolve<IBluetoothAdapter>();
-                using (IBluetoothConnection connection = adapter.CreateConnection(selectedDevice))
-                {
-
-                    if (await connection.RetryConnectAsync(retriesCount: 3))
-                    {
-                        while (true)
-                        {
-                            if (!(await connection.RetryReciveAsync(buffer)).Succeeded)
-                            {
-                                _message = "Can not send data";
-                                break;
-                            }
-                            else
-                            {
-                                if (buffer.Length > 0)
-                                {
-                                    string bufString = Encoding.UTF8.GetString(buffer);
-                                    string[] stringArray = bufString.Split('d');
-                                    _currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                                    _currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                                    _currentParameters[2] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                                }
-
-                            }
-                        }
-                    }
-                    else
-                    {
-                        _message = "Can not connect";
-                    }
-                }
-            }
-        }
-
-        public async Task<string> SendMode(BluetoothDeviceModel selectedDevice, string sendingParameters)
-        {
-            string message = "";
-            if (selectedDevice != null)
-            {
-                IBluetoothAdapter bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
-                using (IBluetoothConnection connection = bluetoothAdapter.CreateConnection(selectedDevice))
-                {
-                    if (await connection.RetryConnectAsync(retriesCount: 3))
-                    {
-                        if (!sendingParameters.Contains("\n"))
-                            sendingParameters += '\n';
-                        char[] byteBuffer = sendingParameters.ToCharArray();
-                        Encoding utf8 = Encoding.UTF8;
-                        byte[] buffer = utf8.GetBytes(byteBuffer);
-                        if (!await connection.RetryTransmitAsync(buffer, 0, buffer.Length))
-                        {
-                            message = "Can not send data";
-                        }
-                    }
-                    else
-                    {
-                        message = "Can not connect";
-                    }
-                }
-            }
-            return message;
-        }
-
     }
 }
