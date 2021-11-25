@@ -13,7 +13,8 @@
 
         </StackLayout>
         <StackLayout BackgroundColor="AliceBlue" Orientation="Vertical" HorizontalOptions="Center">
-            <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedItem="{Binding SensorsDataRepository.Mode}" HorizontalOptions="Center"/>
+            <Label Text="Выбрать режим" Margin="10" FontSize="18" HorizontalOptions="Center"/>
+            <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedMode}" HorizontalOptions="Center" WidthRequest="170" HorizontalTextAlignment="Center"/>
             <Button Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="10"/>
         </StackLayout>
         <StackLayout>

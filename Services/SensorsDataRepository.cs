@@ -12,7 +12,7 @@ namespace Services
     {
         public SensorsDataRepository()
         {
-            Modes=new[] { "По температуре", "По давлению", "Ручной" };
+            Modes = new List<string> { "По температуре", "По давлению", "Ручной" };
             Mode = Modes[0];
         }
 
@@ -37,8 +37,8 @@ namespace Services
             set { SetProperty(ref _currentPower, value); }
         }
 
-        private string[] _modes;
-        public string[] Modes
+        private List<string> _modes;
+        public List<string> Modes
         {
             get { return _modes; }
             set { SetProperty(ref _modes, value); }
@@ -51,6 +51,12 @@ namespace Services
             set { SetProperty(ref _mode, value); }
         }
 
+        private string _selectedMode;
+        public string SelectedMode
+        {
+            get { return _selectedMode; }
+            set { SetProperty(ref _selectedMode, value); }
+        }
         private int _decimalNum;
         public int DecimalNum
         {

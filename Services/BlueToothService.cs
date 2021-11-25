@@ -18,45 +18,28 @@ namespace Services
         {
         }
 
-        public async Task<(double[], string)> RecieveSensorsData(BluetoothDeviceModel selectedDevice)
+        public async Task<(double[], string)> RecieveSensorsData(IBluetoothConnection connection)
         {
             double[] currentParameters = new double[3];
             string message = "";
-            if (selectedDevice != null)
+            byte[] buffer = new byte[16];
+            if (!(await connection.RetryReciveAsync(buffer)).Succeeded)
             {
-                byte[] buffer = new byte[12];
-                IBluetoothAdapter adapter = DependencyService.Resolve<IBluetoothAdapter>();
-                using (IBluetoothConnection connection = adapter.CreateConnection(selectedDevice))
+                message = "Can not send data";
+            }
+            else
+            {
+                if (buffer.Length > 0)
                 {
-
-                    if (await connection.RetryConnectAsync(retriesCount: 3))
-                    {
-
-                        if (!(await connection.RetryReciveAsync(buffer)).Succeeded)
-                        {
-                            message = "Can not send data";
-                        }
-                        else
-                        {
-                            if (buffer.Length > 0)
-                            {
-                                string bufString = Encoding.UTF8.GetString(buffer);
-                                string[] stringArray = bufString.Split('d');
-                                currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                                currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                                currentParameters[2] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        message = "Can not connect";
-                    }
+                    string bufString = Encoding.UTF8.GetString(buffer);
+                    string[] stringArray = bufString.Split('d');
+                    currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                    currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                    currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
                 }
             }
             return await Task.Run(() => (currentParameters, message));
-         //   return await Task.Run(() => message);
+            //   return await Task.Run(() => message);
         }
 
         public async Task<string> SendMode(BluetoothDeviceModel selectedDevice, string sendingParameters)

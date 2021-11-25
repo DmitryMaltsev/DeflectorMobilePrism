@@ -23,12 +23,12 @@ namespace OperationsModule.ViewModels
     {
 
         private BluetoothDeviceModel _selectedDevice { get; set; }
-        private string _message = "";
+        private string _message;
         private double[] _currentParameters;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
-        IBluetoothConnection connection;
-        #region Delegates
+
+        #region Delegatecommands
         private DelegateCommand _decimalOnCommand;
         public DelegateCommand DecimalOnCommand =>
             _decimalOnCommand ?? (_decimalOnCommand = new DelegateCommand(ExecuteDecimalOnCommand));
@@ -61,6 +61,7 @@ namespace OperationsModule.ViewModels
             SensorsDataRepository = sensorsDataRepository;
             BlueToothService = blueToothService;
             _currentParameters = new double[3];
+            _message = "";
         }
 
         #region ExecuteMethods
@@ -100,19 +101,21 @@ namespace OperationsModule.ViewModels
 
         void ExecuteAcceptPowerCommand()
         {
-            //  string symbols = SensorsDataRepository.DecimalNum.ToString() + SensorsDataRepository.UnitNum.ToString();
-            string symbols = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-            SendCommand(symbols);
+            string symbols = "p" + SensorsDataRepository.DecimalNum.ToString() + SensorsDataRepository.UnitNum.ToString();
+            SendPowerCommand(symbols);
         }
 
-        async void SendCommand(string symbols)
-        {
 
-            _message = await Task.Run(() => BlueToothService.SendMode(_selectedDevice, symbols));
-        }
+
         void ExecuteChangeModeCommand()
         {
-            NumsButtonsIsActive();
+            string symbols = "m" + SensorsDataRepository.SelectedMode;
+            SendPowerCommand(symbols);
+        }
+
+        async void SendPowerCommand(string symbols)
+        {
+            _message = await Task.Run(() => BlueToothService.SendMode(_selectedDevice, symbols));
         }
         #endregion
 
@@ -125,36 +128,47 @@ namespace OperationsModule.ViewModels
         public void OnNavigatedTo(INavigationParameters parameters)
         {
             _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("SelectedDevice");
-            //  RecieveSensorsData(_selectedDevice);
-
             RecieveData();
             Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);
-            //  bluetoothRecieveTask.Start();
-            NumsButtonsIsActive();
+
         }
 
-        private async void RecieveData()
+        private bool TimerTickCallBack()
         {
-
-            //while (true)
-            //{
-            //    (_currentParameters, _message) = await Task.Run(() => BlueToothService.RecieveSensorsData(connection));
-            //    Thread.Sleep(100);
-            //}
-
+            SensorsDataRepository.CurrentTemperature = _currentParameters[0];
+            SensorsDataRepository.CurrentPower = _currentParameters[1];
+            int index = Convert.ToInt32(_currentParameters[2]);
+            SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
+            NumsButtonsIsActive();
+            return true;
         }
-
 
         private void NumsButtonsIsActive()
         {
             _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn : SensorsDataRepository.NumsOn == false;
         }
 
-        private bool TimerTickCallBack()
+        private async void RecieveData()
         {
-            SensorsDataRepository.CurrentTemperature = _currentParameters[0];
-            SensorsDataRepository.CurrentPressure = _currentParameters[1];
-            return true;
+            if (_selectedDevice != null)
+            {
+                IBluetoothAdapter bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
+                using (IBluetoothConnection connection = bluetoothAdapter.CreateConnection(_selectedDevice))
+                {
+                    if (await connection.RetryConnectAsync(retriesCount: 3))
+                    {
+                        while (true)
+                        {
+                            (_currentParameters, _message) = await Task.Run(() => BlueToothService.RecieveSensorsData(connection));
+                            Thread.Sleep(100);
+                        }
+                    }
+                    else
+                    {
+                        _message = "Can not connect";
+                    }
+                }
+            }
         }
     }
 }
