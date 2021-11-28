@@ -5,18 +5,23 @@
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="OperationsModule.Views.ChangeModes">
     <StackLayout>
+        <!--#region Верхняя шапка -->
         <StackLayout Orientation="Vertical" BackgroundColor="Blue">
             <Label Text="{Binding SensorsDataRepository.CurrentTemperature, StringFormat='Текущая температура={0}'}" Margin="5" HorizontalOptions="Center" FontSize="18"/>
             <Label Text="{Binding SensorsDataRepository.CurrentPressure, StringFormat='Текущее давление={0}'}" Margin="5"  HorizontalOptions="Center"  FontSize="18"/>
             <Label Text="{Binding SensorsDataRepository.CurrentPower, StringFormat='Текущая мощность={0}%'}" Margin="5"  HorizontalOptions="Center"  FontSize="18"/>
             <Label Text="{Binding SensorsDataRepository.Mode, StringFormat='Текущий режим={0}'}"  Margin="10"  HorizontalOptions="Center"  FontSize="18"/>
-
         </StackLayout>
+        <!--#endregion-->
+        <!--#region Изменение режима -->
         <StackLayout BackgroundColor="AliceBlue" Orientation="Vertical" HorizontalOptions="Center">
             <Label Text="Выбрать режим" Margin="5" FontSize="18" HorizontalOptions="Center"/>
-            <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedMode}" HorizontalOptions="Center" WidthRequest="170" HorizontalTextAlignment="Center"/>
+            <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedMode}"
+                    HorizontalOptions="Center" WidthRequest="170" HorizontalTextAlignment="Center"/>
             <Button Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="5"/>
         </StackLayout>
+        <!--#endregion-->
+        <!--#region Изменение мощности -->
         <StackLayout>
             <Grid HorizontalOptions="Center" Margin="100,5,10,5">
                 <Grid.RowDefinitions>
@@ -36,12 +41,14 @@
                 <Button  Grid.Row="0" Grid.Column="1" Text="+" Command="{Binding UnitOnCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
                 <Label Grid.Row="1" Grid.Column="1" Text="{Binding SensorsDataRepository.UnitNum}"  HorizontalOptions="Center" VerticalOptions="Center"/>
                 <Button  Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding UnitOffCommand}"  IsEnabled="{Binding SensorsDataRepository.NumsOn}" />
-                <Button  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Применить" Command="{Binding AcceptPowerCommand}"/>
+                <Button  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Применить" Command="{Binding AcceptPowerCommand}"  
+                         IsEnabled="{Binding SensorsDataRepository.NumsOn}" />
             </Grid>
         </StackLayout>
-        <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Margin="5">
-            <Label Text="{Binding LogMessages, StringFormat='Сообщение:{0}'}" FontSize="18"/>
-        </StackLayout>
+        <!--#endregion-->
+        <!--#region Лог ошибок -->
+        <Label Text="{Binding LogMessages, StringFormat='Сообщение:{0}'}" FontSize="18" Margin="5" HorizontalOptions="Center"/>
+        <!--#endregion-->
     </StackLayout>
 </ContentPage>
     

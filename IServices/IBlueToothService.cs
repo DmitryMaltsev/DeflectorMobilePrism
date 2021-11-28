@@ -6,7 +6,8 @@ namespace IServices
 {
     public interface IBlueToothService
     {
+        IBluetoothConnection CreateConnection(BluetoothDeviceModel selectedDevice);
         Task<(double[], string)> RecieveSensorsData(IBluetoothConnection connection);
-         Task<string> SendMode(BluetoothDeviceModel selectedDevice, string sendingParameters);
+         Task<string> SendMode(IBluetoothConnection connection, string sendingParameters);
     }
 }

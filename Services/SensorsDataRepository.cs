@@ -71,15 +71,11 @@ namespace Services
             set { SetProperty(ref _unitNum, value); }
         }
 
-        private bool _numsOn;
+        private bool _numsOn=false;
         public bool NumsOn
         {
             get { return _numsOn; }
             set { SetProperty(ref _numsOn, value); }
         }
-
-
-
-
     }
 }

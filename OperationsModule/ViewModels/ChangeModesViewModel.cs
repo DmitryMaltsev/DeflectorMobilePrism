@@ -28,13 +28,13 @@ namespace OperationsModule.ViewModels
             get { return _logMessages; }
             set { SetProperty(ref _logMessages, value); }
         }
-
-        private BluetoothDeviceModel _selectedDevice { get; set; }
         private string _message;
         private double[] _currentParameters;
+        private bool isRecievingData = true;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
-
+        BluetoothDeviceModel _selectedDevice { get; set; }
+        IBluetoothConnection _currentConnection { get; set; }
         #region Delegatecommands
         private DelegateCommand _decimalOnCommand;
         public DelegateCommand DecimalOnCommand =>
@@ -122,10 +122,22 @@ namespace OperationsModule.ViewModels
 
         async void SendPowerCommand(string symbols)
         {
-            _message = await Task.Run(() => BlueToothService.SendMode(_selectedDevice, symbols));
+            isRecievingData = false;
+            using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
+            {
+                if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
+                {
+                    _message = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
+                }
+                else
+                {
+                    _message = "Нет подключения при отправке";
+                }
+            }
+            isRecievingData = true;
+            RecieveData();
         }
         #endregion
-
 
         public void OnNavigatedFrom(INavigationParameters parameters)
         {
@@ -154,28 +166,24 @@ namespace OperationsModule.ViewModels
 
         private void NumsButtonsIsActive()
         {
-            _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn : SensorsDataRepository.NumsOn == false;
+            _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
         }
 
         private async void RecieveData()
         {
-            if (_selectedDevice != null)
+            using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
             {
-                IBluetoothAdapter bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
-                using (IBluetoothConnection connection = bluetoothAdapter.CreateConnection(_selectedDevice))
+                if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
                 {
-                    if (await connection.RetryConnectAsync(retriesCount: 3))
+                    while (isRecievingData)
                     {
-                        while (true)
-                        {
-                            (_currentParameters, _message) = await Task.Run(() => BlueToothService.RecieveSensorsData(connection));
-                            Thread.Sleep(100);
-                        }
+                        (_currentParameters, _message) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
+                        Thread.Sleep(100);
                     }
-                    else
-                    {
-                        _message = "Нет подключения при принятии";
-                    }
+                }
+                else
+                {
+                    _message = "Данные не приняты";
                 }
             }
         }
