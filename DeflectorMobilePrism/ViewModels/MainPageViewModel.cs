@@ -15,6 +15,8 @@ namespace DeflectorMobilePrism.ViewModels
 {
     public class MainPageViewModel : ViewModelBase
     {
+
+
         public new INavigationService NavigationService { get; }
         private BluetoothDeviceModel _selectedDevice;
         public BluetoothDeviceModel SelectedDevice
@@ -40,9 +42,10 @@ namespace DeflectorMobilePrism.ViewModels
         public MainPageViewModel(INavigationService navigationService)
             : base(navigationService)
         {
-            Title = "Main Page";
+            Title = "Стартовая страница";
             NavigationService = navigationService;
             FillBondedDevices();
+             
         }
 
         private void FillBondedDevices()
