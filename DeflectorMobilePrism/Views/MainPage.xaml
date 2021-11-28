@@ -5,7 +5,7 @@
              Title="{Binding Title}">
 
     <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
-        <ListView x:Name="BondedDevices" ItemsSource="{Binding Available_Devices}" SelectedItem="{Binding SelectedDevice}">
+        <ListView x:Name="BondedDevices" ItemsSource="{Binding Available_Devices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <TextCell Text="{Binding Name}" Detail="{Binding Adress}"/>

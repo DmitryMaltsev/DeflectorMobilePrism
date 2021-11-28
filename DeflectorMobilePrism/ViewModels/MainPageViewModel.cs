@@ -54,9 +54,11 @@ namespace DeflectorMobilePrism.ViewModels
         private void ExecuteDeviceSelectedCommand()
         {
 
-            var parameter = new NavigationParameters();
+            NavigationParameters parameter = new NavigationParameters();
             parameter.Add("SelectedDevice", SelectedDevice);
+            SelectedDevice = null;
             NavigationService.NavigateAsync("ChangeModes", parameter);
+                    
         }
     }
 }

@@ -31,6 +31,7 @@ namespace OperationsModule.ViewModels
         private string _message;
         private double[] _currentParameters;
         private bool isRecievingData = true;
+        private bool _pageIsActive;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
         BluetoothDeviceModel _selectedDevice { get; set; }
@@ -76,9 +77,13 @@ namespace OperationsModule.ViewModels
         void ExecuteUnitOnCommand()
         {
 
-            if (SensorsDataRepository.UnitNum < 9)
+            if (SensorsDataRepository.UnitNum < 9 && SensorsDataRepository.DecimalNum < 5)
             {
                 SensorsDataRepository.UnitNum += 1;
+            }
+            if (SensorsDataRepository.DecimalNum == 5)
+            {
+                SensorsDataRepository.UnitNum = 0;
             }
         }
 
@@ -141,15 +146,17 @@ namespace OperationsModule.ViewModels
 
         public void OnNavigatedFrom(INavigationParameters parameters)
         {
-
+            isRecievingData = false;
+            _selectedDevice = null;
+            _pageIsActive = false;
         }
 
         public void OnNavigatedTo(INavigationParameters parameters)
         {
             _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("SelectedDevice");
             RecieveData();
-            Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);
-
+            _pageIsActive = true;
+            Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);   
         }
 
         private bool TimerTickCallBack()
@@ -160,8 +167,11 @@ namespace OperationsModule.ViewModels
             SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
             LogMessages = _message;
             NumsButtonsIsActive();
-
-            return true;
+            if (_pageIsActive)
+                return true;
+            else
+                return false;
+            
         }
 
         private void NumsButtonsIsActive()
