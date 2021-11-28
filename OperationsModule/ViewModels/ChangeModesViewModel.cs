@@ -22,6 +22,13 @@ namespace OperationsModule.ViewModels
     public class ChangeModesViewModel : BindableBase, INavigationAware
     {
 
+        private string _logMessages;
+        public string LogMessages
+        {
+            get { return _logMessages; }
+            set { SetProperty(ref _logMessages, value); }
+        }
+
         private BluetoothDeviceModel _selectedDevice { get; set; }
         private string _message;
         private double[] _currentParameters;
@@ -139,7 +146,9 @@ namespace OperationsModule.ViewModels
             SensorsDataRepository.CurrentPower = _currentParameters[1];
             int index = Convert.ToInt32(_currentParameters[2]);
             SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
+            LogMessages = _message;
             NumsButtonsIsActive();
+
             return true;
         }
 
@@ -165,7 +174,7 @@ namespace OperationsModule.ViewModels
                     }
                     else
                     {
-                        _message = "Can not connect";
+                        _message = "Нет подключения при принятии";
                     }
                 }
             }

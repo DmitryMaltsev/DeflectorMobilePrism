@@ -6,19 +6,19 @@
              x:Class="OperationsModule.Views.ChangeModes">
     <StackLayout>
         <StackLayout Orientation="Vertical" BackgroundColor="Blue">
-            <Label Text="{Binding SensorsDataRepository.CurrentTemperature, StringFormat='Текущая температура={0}'}" Margin="10" HorizontalOptions="Center" FontSize="18"/>
-            <Label Text="{Binding SensorsDataRepository.CurrentPressure, StringFormat='Текущее давление={0}'}" Margin="10"  HorizontalOptions="Center"  FontSize="18"/>
-            <Label Text="{Binding SensorsDataRepository.CurrentPower, StringFormat='Текущая мощность={0}%'}" Margin="10"  HorizontalOptions="Center"  FontSize="18"/>
+            <Label Text="{Binding SensorsDataRepository.CurrentTemperature, StringFormat='Текущая температура={0}'}" Margin="5" HorizontalOptions="Center" FontSize="18"/>
+            <Label Text="{Binding SensorsDataRepository.CurrentPressure, StringFormat='Текущее давление={0}'}" Margin="5"  HorizontalOptions="Center"  FontSize="18"/>
+            <Label Text="{Binding SensorsDataRepository.CurrentPower, StringFormat='Текущая мощность={0}%'}" Margin="5"  HorizontalOptions="Center"  FontSize="18"/>
             <Label Text="{Binding SensorsDataRepository.Mode, StringFormat='Текущий режим={0}'}"  Margin="10"  HorizontalOptions="Center"  FontSize="18"/>
 
         </StackLayout>
         <StackLayout BackgroundColor="AliceBlue" Orientation="Vertical" HorizontalOptions="Center">
-            <Label Text="Выбрать режим" Margin="10" FontSize="18" HorizontalOptions="Center"/>
+            <Label Text="Выбрать режим" Margin="5" FontSize="18" HorizontalOptions="Center"/>
             <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedMode}" HorizontalOptions="Center" WidthRequest="170" HorizontalTextAlignment="Center"/>
-            <Button Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="10"/>
+            <Button Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="5"/>
         </StackLayout>
         <StackLayout>
-            <Grid HorizontalOptions="Center" Margin="100,10,10,10">
+            <Grid HorizontalOptions="Center" Margin="100,5,10,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="1*" />
@@ -38,6 +38,9 @@
                 <Button  Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding UnitOffCommand}"  IsEnabled="{Binding SensorsDataRepository.NumsOn}" />
                 <Button  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Применить" Command="{Binding AcceptPowerCommand}"/>
             </Grid>
+        </StackLayout>
+        <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Margin="5">
+            <Label Text="{Binding LogMessages, StringFormat='Сообщение:{0}'}" FontSize="18"/>
         </StackLayout>
     </StackLayout>
 </ContentPage>

@@ -25,7 +25,7 @@ namespace Services
             byte[] buffer = new byte[16];
             if (!(await connection.RetryReciveAsync(buffer)).Succeeded)
             {
-                message = "Can not send data";
+                message = "Данные не приняты";
             }
             else
             {
@@ -60,12 +60,12 @@ namespace Services
 
                         if (!await connection.RetryTransmitAsync(buffer, 0, buffer.Length))
                         {
-                            message = "Can not send data";
+                            message = "Данные не отправлены";
                         }
                     }
                     else
                     {
-                        message = "Can not connect";
+                        message = "Нет подключения при отправке";
                     }
                 }
             }
