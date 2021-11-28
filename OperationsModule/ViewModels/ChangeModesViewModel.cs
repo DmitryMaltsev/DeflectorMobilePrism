@@ -81,10 +81,6 @@ namespace OperationsModule.ViewModels
             {
                 SensorsDataRepository.UnitNum += 1;
             }
-            if (SensorsDataRepository.DecimalNum == 5)
-            {
-                SensorsDataRepository.UnitNum = 0;
-            }
         }
 
         void ExecuteUnitOffCommand()
@@ -100,6 +96,10 @@ namespace OperationsModule.ViewModels
             if (SensorsDataRepository.DecimalNum < 5)
             {
                 SensorsDataRepository.DecimalNum += 1;
+            }
+            if (SensorsDataRepository.DecimalNum == 5)
+            {
+                SensorsDataRepository.UnitNum = 0;
             }
         }
 
