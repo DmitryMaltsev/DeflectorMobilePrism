@@ -68,7 +68,7 @@ namespace OperationsModule.ViewModels
         {
             SensorsDataRepository = sensorsDataRepository;
             BlueToothService = blueToothService;
-            _currentParameters = new double[3];
+            _currentParameters = new double[4];
             _message = "";
         }
 
@@ -162,8 +162,9 @@ namespace OperationsModule.ViewModels
         private bool TimerTickCallBack()
         {
             SensorsDataRepository.CurrentTemperature = _currentParameters[0];
-            SensorsDataRepository.CurrentPower = _currentParameters[1];
-            int index = Convert.ToInt32(_currentParameters[2]);
+            SensorsDataRepository.CurrentPressure = _currentParameters[1];
+            SensorsDataRepository.CurrentPower = _currentParameters[2];
+            int index = Convert.ToInt32(_currentParameters[3]);
             SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
             LogMessages = _message;
             NumsButtonsIsActive();

@@ -22,15 +22,15 @@ namespace Services
         {
 
             IBluetoothAdapter blueToothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
-            using (IBluetoothConnection connection = blueToothAdapter.CreateConnection(selectedDevice)) 
-            return connection;
+            using (IBluetoothConnection connection = blueToothAdapter.CreateConnection(selectedDevice))
+                return connection;
         }
 
         public async Task<(double[], string)> RecieveSensorsData(IBluetoothConnection connection)
         {
-            double[] currentParameters = new double[3];
+            double[] currentParameters = new double[4];
             string message = "";
-            byte[] buffer = new byte[16];
+            byte[] buffer = new byte[18];
 
             if (!(await connection.RetryReciveAsync(buffer)).Succeeded)
             {
@@ -43,6 +43,7 @@ namespace Services
                 currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
                 currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
                 currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
             }
             return await Task.Run(() => (currentParameters, message));
         }

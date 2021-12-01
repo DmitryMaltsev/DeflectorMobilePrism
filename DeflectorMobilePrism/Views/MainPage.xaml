@@ -2,18 +2,19 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DeflectorMobilePrism.Views.MainPage"
-             Title="{Binding Title}" Background="#C9A66B">
+             Title="{Binding Title}" Background="#CDBEA7">
 
     <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
-        <Frame BackgroundColor="#AF4425" CornerRadius="15" HeightRequest="50" VerticalOptions="Center">
-            <Label Text="Выберите соединение" VerticalOptions="Center" HorizontalOptions="Center" Margin="10" FontSize="20"  TextDecorations="Underline" FontAttributes="Bold"/>
+        <Frame BackgroundColor="#882426" CornerRadius="10" HeightRequest="50" VerticalOptions="Center">
+            <Label Text="Выберите соединение" VerticalOptions="Center" HorizontalOptions="Center" Margin="10" FontSize="20"  
+                    FontFamily="sans-serif-light" FontAttributes="Bold"/>
         </Frame>
         <ListView x:Name="BondedDevices" ItemsSource="{Binding Available_Devices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout  VerticalOptions="Center">
-                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" BackgroundColor="#662E1C" TextColor="White" HorizontalTextAlignment="Center"/>
+                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" BackgroundColor="#896e69" TextColor="White" HorizontalTextAlignment="Center"/>
                         </StackLayout>
                     </ViewCell>
 

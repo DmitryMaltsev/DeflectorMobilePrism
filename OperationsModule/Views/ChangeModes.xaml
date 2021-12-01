@@ -7,10 +7,35 @@
     <StackLayout>
         <!--#region Верхняя шапка -->
         <StackLayout Orientation="Vertical" BackgroundColor="Blue">
-            <Label Text="{Binding SensorsDataRepository.CurrentTemperature, StringFormat='Текущая температура={0}'}" Margin="5" HorizontalOptions="Center" FontSize="18"/>
-            <Label Text="{Binding SensorsDataRepository.CurrentPressure, StringFormat='Текущее давление={0}'}" Margin="5"  HorizontalOptions="Center"  FontSize="18"/>
-            <Label Text="{Binding SensorsDataRepository.CurrentPower, StringFormat='Текущая мощность={0}%'}" Margin="5"  HorizontalOptions="Center"  FontSize="18"/>
-            <Label Text="{Binding SensorsDataRepository.Mode, StringFormat='Текущий режим={0}'}"  Margin="10"  HorizontalOptions="Center"  FontSize="18"/>
+            <!--<Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+            </Grid>-->
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center"  Margin="5" >
+                <Label  Text="Текущая температура=" FontSize="18"/>
+                <Label Text="{Binding SensorsDataRepository.CurrentTemperature}" FontSize="18"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal"  HorizontalOptions="Center"  Margin="5">
+                <Label Text="текущее давление" FontSize="18"/>
+                <Label Text="{Binding SensorsDataRepository.CurrentPressure}"  FontSize="18"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal"  HorizontalOptions="Center"  Margin="5">
+                <Label Text="Текущая мощность=" FontSize="18"/>
+                <Label Text="{Binding SensorsDataRepository.CurrentPower}" FontSize="18"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal"  HorizontalOptions="Center"  Margin="5">
+                <Label Text="Текущий режим=" FontSize="18"/>
+                <Label Text="{Binding SensorsDataRepository.Mode}"  FontSize="18"/>
+            </StackLayout>
+
         </StackLayout>
         <!--#endregion-->
         <!--#region Изменение режима -->
