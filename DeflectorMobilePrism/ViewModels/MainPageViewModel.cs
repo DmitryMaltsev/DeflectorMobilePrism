@@ -45,7 +45,7 @@ namespace DeflectorMobilePrism.ViewModels
             Title = "Стартовая страница";
             NavigationService = navigationService;
             FillBondedDevices();
-             
+
         }
 
         private void FillBondedDevices()
@@ -56,12 +56,13 @@ namespace DeflectorMobilePrism.ViewModels
 
         private void ExecuteDeviceSelectedCommand()
         {
-
-            NavigationParameters parameter = new NavigationParameters();
-            parameter.Add("SelectedDevice", SelectedDevice);
-            SelectedDevice = null;
-            NavigationService.NavigateAsync("ChangeModes", parameter);
-                    
+            if (SelectedDevice!=null)
+            {
+                NavigationParameters parameter = new NavigationParameters();
+                parameter.Add("SelectedDevice", SelectedDevice);
+                SelectedDevice = null;
+                NavigationService.NavigateAsync("ChangeModes", parameter);
+            }
         }
     }
 }

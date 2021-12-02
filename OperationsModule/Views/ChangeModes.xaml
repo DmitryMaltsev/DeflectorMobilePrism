@@ -4,9 +4,14 @@
              xmlns:prism="http://prismlibrary.com" 
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="OperationsModule.Views.ChangeModes">
-    <StackLayout>
+    <ContentPage.Resources>
+        <Style TargetType="Label">
+            <Setter Property="TextColor" Value="White"/>
+        </Style>
+    </ContentPage.Resources>
+    <StackLayout BackgroundColor="#CDBEA7">
         <!--#region Верхняя шапка -->
-        <StackLayout Orientation="Vertical" BackgroundColor="Blue">
+        <StackLayout Orientation="Vertical" BackgroundColor="#882426">
             <!--<Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
@@ -19,7 +24,7 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
             </Grid>-->
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center"  Margin="5" >
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center"  Margin="5">
                 <Label  Text="Текущая температура=" FontSize="18"/>
                 <Label Text="{Binding SensorsDataRepository.CurrentTemperature}" FontSize="18"/>
             </StackLayout>
@@ -33,22 +38,22 @@
             </StackLayout>
             <StackLayout Orientation="Horizontal"  HorizontalOptions="Center"  Margin="5">
                 <Label Text="Текущий режим=" FontSize="18"/>
-                <Label Text="{Binding SensorsDataRepository.Mode}"  FontSize="18"/>
+                <Label Text="{Binding SensorsDataRepository.Mode}"  FontSize="18" />
             </StackLayout>
 
         </StackLayout>
         <!--#endregion-->
         <!--#region Изменение режима -->
-        <StackLayout BackgroundColor="AliceBlue" Orientation="Vertical" HorizontalOptions="Center">
-            <Label Text="Выбрать режим" Margin="5" FontSize="18" HorizontalOptions="Center"/>
+        <StackLayout Orientation="Vertical" HorizontalOptions="Center" BackgroundColor="#CDBEA7">
+            <Label Text="Выбрать режим" Margin="5" FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
             <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedMode}"
                     HorizontalOptions="Center" WidthRequest="170" HorizontalTextAlignment="Center"/>
             <Button Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="5"/>
         </StackLayout>
         <!--#endregion-->
         <!--#region Изменение мощности -->
-        <StackLayout>
-            <Grid HorizontalOptions="Center" Margin="100,5,10,5">
+        <StackLayout  BackgroundColor="#CDBEA7" Margin="100,5,100,5" >
+            <Grid HorizontalOptions="Center" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="1*" />
@@ -56,7 +61,6 @@
                     <RowDefinition Height="1.5*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
@@ -72,7 +76,7 @@
         </StackLayout>
         <!--#endregion-->
         <!--#region Лог ошибок -->
-        <Label Text="{Binding LogMessages, StringFormat='Сообщение:{0}'}" FontSize="18" Margin="5" HorizontalOptions="Center"/>
+        <Label Text="{Binding LogMessages, StringFormat='Сообщение:{0}'}" FontSize="18" Margin="5" HorizontalOptions="Center" BackgroundColor="#896e69" />
         <!--#endregion-->
     </StackLayout>
 </ContentPage>
