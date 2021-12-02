@@ -44,6 +44,7 @@ namespace Services
                 currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
                 currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
                 currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                message = "Данные передаются";
             }
             return await Task.Run(() => (currentParameters, message));
         }

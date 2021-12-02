@@ -25,19 +25,19 @@
                 </Grid.ColumnDefinitions>
             </Grid>-->
             <StackLayout Orientation="Horizontal" HorizontalOptions="Center"  Margin="5">
-                <Label  Text="Текущая температура=" FontSize="18"/>
+                <Label  Text="Текущая температура " FontSize="18"/>
                 <Label Text="{Binding SensorsDataRepository.CurrentTemperature}" FontSize="18"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal"  HorizontalOptions="Center"  Margin="5">
-                <Label Text="текущее давление" FontSize="18"/>
+                <Label Text="текущее давление " FontSize="18"/>
                 <Label Text="{Binding SensorsDataRepository.CurrentPressure}"  FontSize="18"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal"  HorizontalOptions="Center"  Margin="5">
-                <Label Text="Текущая мощность=" FontSize="18"/>
+                <Label Text="Текущая мощность " FontSize="18"/>
                 <Label Text="{Binding SensorsDataRepository.CurrentPower}" FontSize="18"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal"  HorizontalOptions="Center"  Margin="5">
-                <Label Text="Текущий режим=" FontSize="18"/>
+                <Label Text="Текущий режим: " FontSize="18"/>
                 <Label Text="{Binding SensorsDataRepository.Mode}"  FontSize="18" />
             </StackLayout>
 
@@ -45,7 +45,8 @@
         <!--#endregion-->
         <!--#region Изменение режима -->
         <StackLayout Orientation="Vertical" HorizontalOptions="Center" BackgroundColor="#CDBEA7">
-            <Label Text="Выбрать режим" Margin="5" FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
+            <Label Text="Выберите режим"  FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
+            <Label Text="(нажмите на список ниже)" FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
             <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedMode}"
                     HorizontalOptions="Center" WidthRequest="170" HorizontalTextAlignment="Center"/>
             <Button Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="5"/>
