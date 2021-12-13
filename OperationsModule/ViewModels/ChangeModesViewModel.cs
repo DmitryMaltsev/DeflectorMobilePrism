@@ -22,13 +22,19 @@ namespace OperationsModule.ViewModels
     public class ChangeModesViewModel : BindableBase, INavigationAware
     {
 
-        private string _logMessages;
-        public string LogMessages
+        private string _systemLogMessage;
+        public string SystemLogMessage
         {
-            get { return _logMessages; }
-            set { SetProperty(ref _logMessages, value); }
+            get { return _systemLogMessage; }
+            set { SetProperty(ref _systemLogMessage, value); }
         }
-        private string _message;
+        private string _bluetoothLogMessage;
+        public string BliuetoothLogMessage
+        {
+            get { return _bluetoothLogMessage; }
+            set { SetProperty(ref _bluetoothLogMessage, value); }
+        }
+        private string _bluetoothMessage;
         private double[] _currentParameters;
         private bool isRecievingData = true;
         private bool _pageIsActive;
@@ -36,6 +42,7 @@ namespace OperationsModule.ViewModels
         public IBlueToothService BlueToothService { get; }
         BluetoothDeviceModel _selectedDevice { get; set; }
         IBluetoothConnection _currentConnection { get; set; }
+
         #region Delegatecommands
         private DelegateCommand _decimalOnCommand;
         public DelegateCommand DecimalOnCommand =>
@@ -68,8 +75,8 @@ namespace OperationsModule.ViewModels
         {
             SensorsDataRepository = sensorsDataRepository;
             BlueToothService = blueToothService;
-            _currentParameters = new double[4];
-            _message = "";
+            _currentParameters = new double[5];
+            _bluetoothMessage = "";
         }
 
         #region ExecuteMethods
@@ -132,11 +139,11 @@ namespace OperationsModule.ViewModels
             {
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
                 {
-                    _message = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
+                    _bluetoothMessage = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
                 }
                 else
                 {
-                    _message = "Нет подключения при отправке";
+                    _bluetoothMessage = "Нет подключения при отправке";
                 }
             }
             isRecievingData = true;
@@ -161,17 +168,27 @@ namespace OperationsModule.ViewModels
 
         private bool TimerTickCallBack()
         {
-            SensorsDataRepository.CurrentTemperature = _currentParameters[0];
-            SensorsDataRepository.CurrentPressure = _currentParameters[1];
-            SensorsDataRepository.CurrentPower = _currentParameters[2];
-            int index = Convert.ToInt32(_currentParameters[3]);
-            SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
-            LogMessages = _message;
-            NumsButtonsIsActive();
-            if (_pageIsActive)
+            try
+            {
+
+                SensorsDataRepository.CurrentTemperature = _currentParameters[0];
+                SensorsDataRepository.CurrentPressure = _currentParameters[1];
+                SensorsDataRepository.CurrentPower = _currentParameters[2];
+                int index = Convert.ToInt32(_currentParameters[3]);
+                SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
+                _ = _currentParameters[4] == 1 ? SystemLogMessage = "Контактор замкнут" : SystemLogMessage = "Контактор разомкнут";
+                BliuetoothLogMessage = _bluetoothMessage;
+                NumsButtonsIsActive();
+                if (_pageIsActive)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                SystemLogMessage = ex.Message;
                 return true;
-            else
-                return false;
+            }
             
         }
 
@@ -188,13 +205,13 @@ namespace OperationsModule.ViewModels
                 {
                     while (isRecievingData)
                     {
-                        (_currentParameters, _message) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
+                        (_currentParameters, _bluetoothMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
                         Thread.Sleep(100);
                     }
                 }
                 else
                 {
-                    _message = "Данные не приняты";
+                    _bluetoothMessage = "Данные не приняты";
                 }
             }
         }

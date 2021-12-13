@@ -7,7 +7,7 @@
     <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
         <Frame BackgroundColor="#882426" CornerRadius="10" HeightRequest="50" VerticalOptions="Center">
             <Label Text="Выберите соединение" VerticalOptions="Center" HorizontalOptions="Center" Margin="10" FontSize="20"  
-                    FontFamily="sans-serif-light" FontAttributes="Bold"/>
+                    FontFamily="sans-serif-light" FontAttributes="Bold" TextColor="White"/>
         </Frame>
         <ListView x:Name="BondedDevices" ItemsSource="{Binding Available_Devices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
             <ListView.ItemTemplate>

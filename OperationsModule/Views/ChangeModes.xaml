@@ -29,7 +29,7 @@
                 <Label Text="{Binding SensorsDataRepository.CurrentTemperature}" FontSize="18"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal"  HorizontalOptions="Center"  Margin="5">
-                <Label Text="текущее давление " FontSize="18"/>
+                <Label Text="Текущее давление " FontSize="18"/>
                 <Label Text="{Binding SensorsDataRepository.CurrentPressure}"  FontSize="18"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal"  HorizontalOptions="Center"  Margin="5">
@@ -66,10 +66,10 @@
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <Button  Grid.Row="0" Grid.Column="0" Text="+" Command="{Binding DecimalOnCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
-                <Label Grid.Row="1" Grid.Column="0" Text="{Binding SensorsDataRepository.DecimalNum}"  HorizontalOptions="Center" VerticalOptions="Center"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="{Binding SensorsDataRepository.DecimalNum}"  HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
                 <Button  Grid.Row="2" Grid.Column="0" Text="-" Command="{Binding DecimalOffCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
                 <Button  Grid.Row="0" Grid.Column="1" Text="+" Command="{Binding UnitOnCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
-                <Label Grid.Row="1" Grid.Column="1" Text="{Binding SensorsDataRepository.UnitNum}"  HorizontalOptions="Center" VerticalOptions="Center"/>
+                <Label Grid.Row="1" Grid.Column="1" Text="{Binding SensorsDataRepository.UnitNum}"  HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
                 <Button  Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding UnitOffCommand}"  IsEnabled="{Binding SensorsDataRepository.NumsOn}" />
                 <Button  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Применить" Command="{Binding AcceptPowerCommand}"  
                          IsEnabled="{Binding SensorsDataRepository.NumsOn}" />
@@ -77,7 +77,8 @@
         </StackLayout>
         <!--#endregion-->
         <!--#region Лог ошибок -->
-        <Label Text="{Binding LogMessages, StringFormat='Сообщение:{0}'}" FontSize="18" Margin="5" HorizontalOptions="Center" BackgroundColor="#896e69" />
+        <Label Text="{Binding SystemLogMessage, StringFormat='Сообщение:{0}'}" FontSize="18" Margin="5" HorizontalOptions="Center" BackgroundColor="#896e69" />
+        <!--<Label Text="{Binding BluetoothLogMessage, StringFormat='Сообщение:{0}'}" FontSize="18" Margin="5" HorizontalOptions="Center" BackgroundColor="#896e69" />-->
         <!--#endregion-->
     </StackLayout>
 </ContentPage>

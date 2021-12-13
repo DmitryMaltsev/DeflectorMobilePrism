@@ -28,9 +28,9 @@ namespace Services
 
         public async Task<(double[], string)> RecieveSensorsData(IBluetoothConnection connection)
         {
-            double[] currentParameters = new double[4];
+            double[] currentParameters = new double[5];
             string message = "";
-            byte[] buffer = new byte[18];
+            byte[] buffer = new byte[20];
 
             if (!(await connection.RetryReciveAsync(buffer)).Succeeded)
             {
@@ -38,13 +38,21 @@ namespace Services
             }
             else
             {
-                string bufString = Encoding.UTF8.GetString(buffer);
-                string[] stringArray = bufString.Split('d');
-                currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                message = "Данные передаются";
+                try
+                {
+                    string bufString = Encoding.UTF8.GetString(buffer);
+                    string[] stringArray = bufString.Split('d');
+                    currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                    currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                    currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                    currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                    currentParameters[4] = double.Parse(stringArray[4], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                    message = "Данные передаются";
+                }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                }
             }
             return await Task.Run(() => (currentParameters, message));
         }
