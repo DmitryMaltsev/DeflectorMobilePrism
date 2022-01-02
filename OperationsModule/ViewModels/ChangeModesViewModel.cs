@@ -47,6 +47,13 @@ namespace OperationsModule.ViewModels
             }
         }
 
+        private string _deviceName;
+        public string DeviceName
+        {
+            get { return _deviceName; }
+            set { SetProperty(ref _deviceName, value); }
+        }
+
         /// <summary>
         /// Если ручной мод и подключение свободно
         /// </summary>
@@ -188,6 +195,7 @@ namespace OperationsModule.ViewModels
         public void OnNavigatedTo(INavigationParameters parameters)
         {
             _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("SelectedDevice");
+            DeviceName = _selectedDevice.Name;
             RecieveData();
             _pageIsActive = true;
             Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);
@@ -203,7 +211,7 @@ namespace OperationsModule.ViewModels
                 SensorsDataRepository.CurrentPower = _currentParameters[2];
                 int index = Convert.ToInt32(_currentParameters[3]);
                 SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
-                _ = _currentParameters[4] == 1 ? SystemLogMessage = "Контактор замкнут" : SystemLogMessage = "Контактор разомкнут";
+                _ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
                 BliuetoothLogMessage = _bluetoothMessage;
                 NumsButtonsIsActive();
                 if (_pageIsActive)
