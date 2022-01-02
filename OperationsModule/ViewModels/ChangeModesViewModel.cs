@@ -22,6 +22,7 @@ namespace OperationsModule.ViewModels
     public class ChangeModesViewModel : BindableBase, INavigationAware
     {
 
+        #region Rising properties
         private string _systemLogMessage;
         public string SystemLogMessage
         {
@@ -34,9 +35,32 @@ namespace OperationsModule.ViewModels
             get { return _bluetoothLogMessage; }
             set { SetProperty(ref _bluetoothLogMessage, value); }
         }
+
+
+        private bool _isRecievingData = true;
+        public bool IsRecievingData
+        {
+            get { return _isRecievingData; }
+            set
+            {
+                SetProperty(ref _isRecievingData, value);
+            }
+        }
+
+        /// <summary>
+        /// Если ручной мод и подключение свободно
+        /// </summary>
+        private bool _canChangePower = false;
+        public bool CanChangePower
+        {
+            get { return _canChangePower; }
+            set {
+                SetProperty(ref _canChangePower, value); }
+        }
+        #endregion
+
         private string _bluetoothMessage;
         private double[] _currentParameters;
-        private bool isRecievingData = true;
         private bool _pageIsActive;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
@@ -110,6 +134,7 @@ namespace OperationsModule.ViewModels
             }
         }
 
+
         void ExecuteDecimalOffCommand()
         {
             if (SensorsDataRepository.DecimalNum > 0)
@@ -121,7 +146,9 @@ namespace OperationsModule.ViewModels
         void ExecuteAcceptPowerCommand()
         {
             string symbols = "p" + SensorsDataRepository.DecimalNum.ToString() + SensorsDataRepository.UnitNum.ToString();
+            SensorsDataRepository.NumsOn = false;
             SendPowerCommand(symbols);
+            SensorsDataRepository.NumsOn = true;
         }
 
 
@@ -134,7 +161,7 @@ namespace OperationsModule.ViewModels
 
         async void SendPowerCommand(string symbols)
         {
-            isRecievingData = false;
+            IsRecievingData = false;
             using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
             {
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
@@ -146,14 +173,14 @@ namespace OperationsModule.ViewModels
                     _bluetoothMessage = "Нет подключения при отправке";
                 }
             }
-            isRecievingData = true;
+            IsRecievingData = true;
             RecieveData();
         }
         #endregion
 
         public void OnNavigatedFrom(INavigationParameters parameters)
         {
-            isRecievingData = false;
+            IsRecievingData = false;
             _selectedDevice = null;
             _pageIsActive = false;
         }
@@ -163,7 +190,7 @@ namespace OperationsModule.ViewModels
             _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("SelectedDevice");
             RecieveData();
             _pageIsActive = true;
-            Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);   
+            Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);
         }
 
         private bool TimerTickCallBack()
@@ -189,7 +216,7 @@ namespace OperationsModule.ViewModels
                 SystemLogMessage = ex.Message;
                 return true;
             }
-            
+
         }
 
         private void NumsButtonsIsActive()
@@ -203,7 +230,7 @@ namespace OperationsModule.ViewModels
             {
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
                 {
-                    while (isRecievingData)
+                    while (IsRecievingData)
                     {
                         (_currentParameters, _bluetoothMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
                         Thread.Sleep(100);
