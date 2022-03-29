@@ -108,6 +108,7 @@ namespace OperationsModule.ViewModels
             BlueToothService = blueToothService;
             _currentParameters = new double[5];
             _bluetoothMessage = "";
+           
         }
 
         #region ExecuteMethods
@@ -199,6 +200,7 @@ namespace OperationsModule.ViewModels
             RecieveData();
             _pageIsActive = true;
             Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);
+            SensorsDataRepository.FloorNumber = 10;
         }
 
         private bool TimerTickCallBack()

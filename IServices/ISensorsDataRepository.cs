@@ -13,5 +13,6 @@ namespace IServices
         int UnitNum { get; set; }
         bool NumsOn { get; set; }
         string SelectedMode { get; set; }
+        int FloorNumber { get; set; }
     }
 }

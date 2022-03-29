@@ -16,6 +16,13 @@ namespace Services
             Mode = Modes[0];
         }
 
+        private int _floorNumber=10;
+        public int FloorNumber
+        {
+            get { return _floorNumber; }
+            set { SetProperty(ref _floorNumber, value); }
+        }   
+
         private double _currentTemperature;
         public double CurrentTemperature
         {

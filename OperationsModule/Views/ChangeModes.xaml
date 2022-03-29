@@ -31,10 +31,10 @@
                 <Label Text="Название устройства: " FontSize="20" FontAttributes="Bold" HorizontalOptions="End"/>
                 <Label Text="{Binding DeviceName}" FontSize="20" FontAttributes="Bold" HorizontalOptions="Start"/>
             </StackLayout>
-            
+
             <Label  Grid.Row="1" Grid.Column="0"  Text="Тcels:" FontSize="18" HorizontalOptions="End"/>
             <Label Grid.Row="1" Grid.Column="1" Text="{Binding SensorsDataRepository.CurrentTemperature}" FontSize="18" HorizontalOptions="Start"/>
-            
+
             <Label  Grid.Row="1" Grid.Column="2" Text="Pпа:" FontSize="18" HorizontalOptions="End"/>
             <Label  Grid.Row="1" Grid.Column="3" Text="{Binding SensorsDataRepository.CurrentPressure}"  FontSize="18"  HorizontalOptions="Start"/>
 
@@ -51,12 +51,34 @@
         </Grid>
         <!--#endregion-->
         <!--#region Изменение режима -->
-        <StackLayout Orientation="Vertical" HorizontalOptions="Center" BackgroundColor="#CDBEA7">
-            <Label Text="Выберите режим"  FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
-            <Label Text="(нажмите на список ниже)" FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
-            <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedMode}"
+        <StackLayout Orientation="Vertical" HorizontalOptions="Start" BackgroundColor="#CDBEA7">
+            <!--<Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+            </Grid>-->
+
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+                <StackLayout Orientation="Vertical" HorizontalOptions="Start" BackgroundColor="#CDBEA7">
+                    <Label Text="Выберите режим"  FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
+                    <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedMode}"
                     HorizontalOptions="Center" WidthRequest="170" HorizontalTextAlignment="Center"/>
-            <Button Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="5" IsEnabled="{Binding IsRecievingData}"/>
+                    <Button  Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="5" IsEnabled="{Binding IsRecievingData}"/>
+                </StackLayout>
+                <StackLayout Orientation="Vertical" HorizontalOptions="Start" BackgroundColor="#CDBEA7">
+                    <Label  Text="Количество этажей" FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
+                    <Entry  Text="{Binding SensorDataRepository.FloorNumber, Mode=TwoWay}"  Keyboard="Numeric" MaxLength="2"   HorizontalTextAlignment="Center"  />
+                 <Button  Text="Применить" Command="{Binding ChangeModeCommand}" Margin="5" IsEnabled="{Binding IsRecievingData}"/>
+                 
+                </StackLayout>
+            </StackLayout>
+
         </StackLayout>
         <!--#endregion-->
         <!--#region Изменение мощности -->
