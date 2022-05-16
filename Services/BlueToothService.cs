@@ -54,7 +54,8 @@ namespace Services
                     message = ex.Message;
                 }
             }
-            return await Task.Run(() => (currentParameters, message));
+            await Task.Delay(500);
+            return (currentParameters, message);
         }
 
         public async Task<string> SendMode(IBluetoothConnection connection, string sendingParameters)

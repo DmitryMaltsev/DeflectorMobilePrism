@@ -29,6 +29,7 @@ namespace OperationsModule.ViewModels
             get { return _systemLogMessage; }
             set { SetProperty(ref _systemLogMessage, value); }
         }
+
         private string _bluetoothLogMessage;
         public string BliuetoothLogMessage
         {
@@ -199,7 +200,7 @@ namespace OperationsModule.ViewModels
             DeviceName = _selectedDevice.Name;
             RecieveData();
             _pageIsActive = true;
-            Device.StartTimer(TimeSpan.FromMilliseconds(10), TimerTickCallBack);
+            Device.StartTimer(TimeSpan.FromMilliseconds(1000), TimerTickCallBack);
             SensorsDataRepository.FloorNumber = 10;
         }
 
@@ -207,15 +208,19 @@ namespace OperationsModule.ViewModels
         {
             try
             {
+         //       var summ = _currentParameters[0] + _currentParameters[1] + _currentParameters[2] + _currentParameters[3]+ _currentParameters[4];
+          //      if (summ!=0)
+                {
+                    SensorsDataRepository.CurrentTemperature = _currentParameters[0];
+                    SensorsDataRepository.CurrentPressure = _currentParameters[1];
+                    SensorsDataRepository.CurrentPower = _currentParameters[2];
+                    int index = Convert.ToInt32(_currentParameters[3]);
+                    SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
+                    _ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
+                    BliuetoothLogMessage = _bluetoothMessage;
+                    NumsButtonsIsActive();
+                }
 
-                SensorsDataRepository.CurrentTemperature = _currentParameters[0];
-                SensorsDataRepository.CurrentPressure = _currentParameters[1];
-                SensorsDataRepository.CurrentPower = _currentParameters[2];
-                int index = Convert.ToInt32(_currentParameters[3]);
-                SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
-                _ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
-                BliuetoothLogMessage = _bluetoothMessage;
-                NumsButtonsIsActive();
                 if (_pageIsActive)
                     return true;
                 else
@@ -223,7 +228,7 @@ namespace OperationsModule.ViewModels
             }
             catch (Exception ex)
             {
-                SystemLogMessage = ex.Message;
+                SystemLogMessage = $"{ ex.Message} {ex.StackTrace}";
                 return true;
             }
 
@@ -234,6 +239,9 @@ namespace OperationsModule.ViewModels
             _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
         }
 
+        /// <summary>
+        /// Получаем данные с BlueTooth
+        /// </summary>
         private async void RecieveData()
         {
             using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
@@ -243,7 +251,7 @@ namespace OperationsModule.ViewModels
                     while (IsRecievingData)
                     {
                         (_currentParameters, _bluetoothMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
-                        Thread.Sleep(100);
+                     //   Thread.Sleep(100);
                     }
                 }
                 else
