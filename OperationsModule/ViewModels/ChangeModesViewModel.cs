@@ -183,12 +183,6 @@ namespace OperationsModule.ViewModels
         async void SendBlueToothCommand(string symbols)
         {
             IsRecievingData = false;
-            //if (_currentConnection!=null)
-            //{
-            //    _currentConnection = null;
-            //    _currentConnection.Dispose();
-            //}
-            
             using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
             {
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
@@ -238,11 +232,6 @@ namespace OperationsModule.ViewModels
         /// <param name="canChangeMode"></param>
         private async void RecieveData(bool canChangeMode)
         {
-            //if (_currentConnection != null)
-            //{
-            //    _currentConnection = null;
-            //    _currentConnection.Dispose();
-            //}
             using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
             {
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
@@ -262,6 +251,7 @@ namespace OperationsModule.ViewModels
                                 int index = Convert.ToInt32(_currentParameters[3]);
                                 SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
                                 int bufferIndex = SensorsDataRepository.Modes.FindIndex(p => p == SensorsDataRepository.Mode);
+                                //Для отображения смены режима
                                 if (canChangeMode)
                                 {
                                     if (bufferIndex != SensorsDataRepository.SelectedModeIndex) SensorsDataRepository.SelectedModeIndex = bufferIndex;
