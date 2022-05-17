@@ -62,8 +62,10 @@ namespace OperationsModule.ViewModels
         public bool CanChangePower
         {
             get { return _canChangePower; }
-            set {
-                SetProperty(ref _canChangePower, value); }
+            set
+            {
+                SetProperty(ref _canChangePower, value);
+            }
         }
         #endregion
 
@@ -109,7 +111,7 @@ namespace OperationsModule.ViewModels
             BlueToothService = blueToothService;
             _currentParameters = new double[5];
             _bluetoothMessage = "";
-           
+
         }
 
         #region ExecuteMethods
@@ -200,32 +202,7 @@ namespace OperationsModule.ViewModels
             DeviceName = _selectedDevice.Name;
             RecieveData();
             _pageIsActive = true;
-         //   Device.StartTimer(TimeSpan.FromMilliseconds(1500), TimerTickCallBack);
             SensorsDataRepository.FloorNumber = 10;
-        }
-
-        private bool TimerTickCallBack()
-        {
-            try
-            {
-
-
-
-
-
-
-
-                if (_pageIsActive)
-                    return true;
-                else
-                    return false;
-            }
-            catch (Exception ex)
-            {
-                SystemLogMessage = $"{ ex.Message} {ex.StackTrace}";
-                return true;
-            }
-
         }
 
         private void NumsButtonsIsActive()

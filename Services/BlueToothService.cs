@@ -41,11 +41,11 @@ namespace Services
                     {
                         string bufString = Encoding.UTF8.GetString(buffer);
                         string[] stringArray = bufString.Split('d');
-                        currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                        currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                        currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                        currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
-                        currentParameters[4] = double.Parse(stringArray[4], NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"));
+                        currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+                        currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+                        currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.InvariantCulture);
+                        currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.InvariantCulture);
+                        currentParameters[4] = double.Parse(stringArray[4], NumberStyles.Any, CultureInfo.InvariantCulture);
                         message = "Данные передаются";
                     }
                     catch (Exception ex)
@@ -53,7 +53,7 @@ namespace Services
                         message = ex.Message;
                     }
                 }
-            await Task.Delay(1500);
+            await Task.Delay(200);
             return (currentParameters, message);
         }
 
