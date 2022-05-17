@@ -53,7 +53,7 @@ namespace Services
                         message = ex.Message;
                     }
                 }
-            await Task.Delay(200);
+            await Task.Delay(50);
             return (currentParameters, message);
         }
 
@@ -62,12 +62,19 @@ namespace Services
             string message = "";
             using (connection)
             {
-                if (!sendingParameters.Contains("\n"))
-                    sendingParameters += '\n';
-                char[] byteBuffer = sendingParameters.ToCharArray();
-                Encoding utf8 = Encoding.UTF8;
-                byte[] buffer = utf8.GetBytes(byteBuffer);
-                if (!await connection.RetryTransmitAsync(buffer, 0, buffer.Length))
+                try
+                {
+                    if (!sendingParameters.Contains("\n"))
+                        sendingParameters += '\n';
+                    char[] byteBuffer = sendingParameters.ToCharArray();
+                    Encoding utf8 = Encoding.UTF8;
+                    byte[] buffer = utf8.GetBytes(byteBuffer);
+                    if (!await connection.RetryTransmitAsync(buffer, 0, buffer.Length))
+                    {
+                        message = "Данные не Отправлены";
+                    }
+                }
+                catch
                 {
                     message = "Данные не Отправлены";
                 }

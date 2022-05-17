@@ -12,7 +12,7 @@ namespace IServices
         int DecimalNum { get; set; }
         int UnitNum { get; set; }
         bool NumsOn { get; set; }
-        string SelectedMode { get; set; }
         int FloorNumber { get; set; }
+        int SelectedModeIndex { get; set; }
     }
 }

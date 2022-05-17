@@ -48,6 +48,7 @@ namespace OperationsModule.ViewModels
             }
         }
 
+
         private string _deviceName;
         public string DeviceName
         {
@@ -76,6 +77,7 @@ namespace OperationsModule.ViewModels
         public IBlueToothService BlueToothService { get; }
         BluetoothDeviceModel _selectedDevice { get; set; }
         IBluetoothConnection _currentConnection { get; set; }
+        private event EventHandler ChangeModeEvent;
 
         #region Delegatecommands
         private DelegateCommand _decimalOnCommand;
@@ -154,25 +156,39 @@ namespace OperationsModule.ViewModels
             }
         }
 
+        /// <summary>
+        /// Меняем мощность в ручном режиме
+        /// </summary>
         void ExecuteAcceptPowerCommand()
         {
             string symbols = "p" + SensorsDataRepository.DecimalNum.ToString() + SensorsDataRepository.UnitNum.ToString();
             SensorsDataRepository.NumsOn = false;
-            SendPowerCommand(symbols);
+            SendBlueToothCommand(symbols);
             SensorsDataRepository.NumsOn = true;
         }
 
 
-
+        /// <summary>
+        /// Меняем режим
+        /// </summary>
         void ExecuteChangeModeCommand()
         {
-            string symbols = "m" + SensorsDataRepository.SelectedMode;
-            SendPowerCommand(symbols);
+            string symbols = "m" + SensorsDataRepository.SelectedModeIndex;
+            SendBlueToothCommand(symbols);
         }
-
-        async void SendPowerCommand(string symbols)
+        /// <summary>
+        /// Меняем мощность
+        /// </summary>
+        /// <param name="symbols"></param>
+        async void SendBlueToothCommand(string symbols)
         {
             IsRecievingData = false;
+            //if (_currentConnection!=null)
+            //{
+            //    _currentConnection = null;
+            //    _currentConnection.Dispose();
+            //}
+            
             using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
             {
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
@@ -185,7 +201,7 @@ namespace OperationsModule.ViewModels
                 }
             }
             IsRecievingData = true;
-            RecieveData();
+           RecieveData(true);
         }
         #endregion
 
@@ -200,9 +216,15 @@ namespace OperationsModule.ViewModels
         {
             _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("SelectedDevice");
             DeviceName = _selectedDevice.Name;
-            RecieveData();
+           RecieveData(true);
+            ChangeModeEvent += ChangeModeCallBack;
             _pageIsActive = true;
             SensorsDataRepository.FloorNumber = 10;
+        }
+
+        private void ChangeModeCallBack(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void NumsButtonsIsActive()
@@ -213,15 +235,21 @@ namespace OperationsModule.ViewModels
         /// <summary>
         /// Получаем данные с BlueTooth
         /// </summary>
-        private async void RecieveData()
+        /// <param name="canChangeMode"></param>
+        private async void RecieveData(bool canChangeMode)
         {
+            //if (_currentConnection != null)
+            //{
+            //    _currentConnection = null;
+            //    _currentConnection.Dispose();
+            //}
             using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
             {
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
                 {
                     while (IsRecievingData)
                     {
-                        (_currentParameters, _bluetoothMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
+                        (_currentParameters, BliuetoothLogMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
                         try
                         {
                             //Дополнительная проверка на полученные значения, т.к. проверка на соединение не всегда работает
@@ -233,22 +261,26 @@ namespace OperationsModule.ViewModels
                                 SensorsDataRepository.CurrentPower = _currentParameters[2];
                                 int index = Convert.ToInt32(_currentParameters[3]);
                                 SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
+                                int bufferIndex = SensorsDataRepository.Modes.FindIndex(p => p == SensorsDataRepository.Mode);
+                                if (canChangeMode)
+                                {
+                                    if (bufferIndex != SensorsDataRepository.SelectedModeIndex) SensorsDataRepository.SelectedModeIndex = bufferIndex;
+                                    canChangeMode = false;
+                                }
+
                                 _ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
-                                BliuetoothLogMessage = _bluetoothMessage;
                                 NumsButtonsIsActive();
                             }
                         }
                         catch (Exception ex)
                         {
                             SystemLogMessage = $"{ ex.Message} {ex.StackTrace}";
-
                         }
-                        //   Thread.Sleep(100);
                     }
                 }
                 else
                 {
-                    _bluetoothMessage = "Данные не приняты";
+                    BliuetoothLogMessage = "Данные не приняты";
                 }
             }
         }

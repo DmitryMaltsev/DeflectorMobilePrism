@@ -58,11 +58,15 @@ namespace Services
             set { SetProperty(ref _mode, value); }
         }
 
-        private string _selectedMode;
-        public string SelectedMode
+
+        /// <summary>
+        /// Какой индекс режима выбран
+        /// </summary>
+        private int _selectedModeIndex;
+        public int SelectedModeIndex
         {
-            get { return _selectedMode; }
-            set { SetProperty(ref _selectedMode, value); }
+            get { return _selectedModeIndex; }
+            set { SetProperty(ref _selectedModeIndex, value); }
         }
         private int _decimalNum;
         public int DecimalNum
