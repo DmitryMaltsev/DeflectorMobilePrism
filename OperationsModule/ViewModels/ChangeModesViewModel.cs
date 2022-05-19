@@ -80,6 +80,7 @@ namespace OperationsModule.ViewModels
         private event EventHandler ChangeModeEvent;
 
         #region Delegatecommands
+      
         private DelegateCommand _decimalOnCommand;
         public DelegateCommand DecimalOnCommand =>
             _decimalOnCommand ?? (_decimalOnCommand = new DelegateCommand(ExecuteDecimalOnCommand));
@@ -224,19 +225,9 @@ namespace OperationsModule.ViewModels
             _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("SelectedDevice");
             DeviceName = _selectedDevice.Name;
            RecieveData(true);
-            ChangeModeEvent += ChangeModeCallBack;
             _pageIsActive = true;
         }
 
-        private void ChangeModeCallBack(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void NumsButtonsIsActive()
-        {
-            _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
-        }
 
         /// <summary>
         /// Получаем данные с BlueTooth
@@ -260,19 +251,20 @@ namespace OperationsModule.ViewModels
                                 SensorsDataRepository.CurrentTemperature = _currentParameters[0];
                                 SensorsDataRepository.CurrentPressure = _currentParameters[1];
                                 SensorsDataRepository.CurrentPower = _currentParameters[2];
-                               int _modeIndex = Convert.ToInt32(_currentParameters[3]);
+                               int modeIndex = Convert.ToInt32(_currentParameters[3]);
                                 int floorNum = Convert.ToInt32(_currentParameters[5]);
                                 //Для отображения начального режима
                                 if (SensorsDataRepository.SelectedModeIndex==-1)
                                 {
-                                    SensorsDataRepository.SelectedModeIndex = 1;
+                                    SensorsDataRepository.SelectedModeIndex = modeIndex;
                                 }
                                 if (SensorsDataRepository.FloorNumber==-1)
                                 {
                                     SensorsDataRepository.FloorNumber = floorNum;
                                 }
+                                //Потому допишу. Не знаю чем это будет
                                 //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
-                                NumsButtonsIsActive();
+                                _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
                             }
                         }
                         catch (Exception ex)

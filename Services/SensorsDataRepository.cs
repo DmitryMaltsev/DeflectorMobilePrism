@@ -12,7 +12,7 @@ namespace Services
     {
         public SensorsDataRepository()
         {
-            Modes = new List<string> { "По температуре", "По давлению", "Ручной" };
+            Modes = new List<string> { "По давлению", "Ручной" };
             Mode = Modes[0];
         }
 

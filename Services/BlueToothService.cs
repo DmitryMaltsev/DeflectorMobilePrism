@@ -46,7 +46,8 @@ namespace Services
                         currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.InvariantCulture);
                         currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.InvariantCulture);
                         currentParameters[4] = double.Parse(stringArray[4], NumberStyles.Any, CultureInfo.InvariantCulture);
-                        message = "Данные передаются";
+                        currentParameters[5] = double.Parse(stringArray[5], NumberStyles.Any, CultureInfo.InvariantCulture);
+                    message = "Данные передаются";
                     }
                     catch (Exception ex)
                     {
