@@ -62,7 +62,7 @@ namespace Services
         /// <summary>
         /// Какой индекс режима выбран
         /// </summary>
-        private int _selectedModeIndex;
+        private int _selectedModeIndex=-1;
         public int SelectedModeIndex
         {
             get { return _selectedModeIndex; }

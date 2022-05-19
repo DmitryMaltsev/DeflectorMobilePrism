@@ -73,6 +73,7 @@ namespace OperationsModule.ViewModels
         private string _bluetoothMessage;
         private double[] _currentParameters;
         private bool _pageIsActive;
+        private int _modeIndex;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
         BluetoothDeviceModel _selectedDevice { get; set; }
@@ -173,7 +174,7 @@ namespace OperationsModule.ViewModels
         /// </summary>
         void ExecuteChangeModeCommand()
         {
-            string symbols = "m" + SensorsDataRepository.SelectedModeIndex;
+            string symbols = "m" + _modeIndex;
             SendBlueToothCommand(symbols);
         }
         /// <summary>
@@ -248,15 +249,14 @@ namespace OperationsModule.ViewModels
                                 SensorsDataRepository.CurrentTemperature = _currentParameters[0];
                                 SensorsDataRepository.CurrentPressure = _currentParameters[1];
                                 SensorsDataRepository.CurrentPower = _currentParameters[2];
-                                int index = Convert.ToInt32(_currentParameters[3]);
-                                SensorsDataRepository.Mode = SensorsDataRepository.Modes[index];
-                                int bufferIndex = SensorsDataRepository.Modes.FindIndex(p => p == SensorsDataRepository.Mode);
-                                //Для отображения смены режима
-                                if (canChangeMode)
+                                _modeIndex = Convert.ToInt32(_currentParameters[3]);
+                                
+                                //Для отображения начального режима
+                                if (SensorsDataRepository.SelectedModeIndex==-1)
                                 {
-                                    if (bufferIndex != SensorsDataRepository.SelectedModeIndex) SensorsDataRepository.SelectedModeIndex = bufferIndex;
-                                    canChangeMode = false;
+                                    SensorsDataRepository.SelectedModeIndex = _modeIndex;
                                 }
+                      
 
                                 _ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
                                 NumsButtonsIsActive();
