@@ -73,8 +73,6 @@ namespace OperationsModule.ViewModels
         private string _bluetoothMessage;
         private double[] _currentParameters;
         private bool _pageIsActive;
-        private int _modeIndex;
-        private int floorNum;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
         BluetoothDeviceModel _selectedDevice { get; set; }
@@ -262,8 +260,8 @@ namespace OperationsModule.ViewModels
                                 SensorsDataRepository.CurrentTemperature = _currentParameters[0];
                                 SensorsDataRepository.CurrentPressure = _currentParameters[1];
                                 SensorsDataRepository.CurrentPower = _currentParameters[2];
-                                _modeIndex = Convert.ToInt32(_currentParameters[3]);
-                                floorNum = Convert.ToInt32(_currentParameters[5]);
+                               int _modeIndex = Convert.ToInt32(_currentParameters[3]);
+                                int floorNum = Convert.ToInt32(_currentParameters[5]);
                                 //Для отображения начального режима
                                 if (SensorsDataRepository.SelectedModeIndex==-1)
                                 {
