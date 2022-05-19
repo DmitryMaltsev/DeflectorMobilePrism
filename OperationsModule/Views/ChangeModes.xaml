@@ -62,9 +62,9 @@
                 </StackLayout>
                 <StackLayout Orientation="Vertical" HorizontalOptions="Start" BackgroundColor="#CDBEA7">
                     <Label  Text="Количество этажей" FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
-                    <Entry  Text="{Binding SensorDataRepository.FloorNumber, Mode=TwoWay}"  
+                    <Entry  Text="{Binding SensorsDataRepository.FloorNumber}"  Placeholder="{Binding SensorsDataRepository.FloorNumber}" 
                             Keyboard="Numeric" MaxLength="2"   HorizontalTextAlignment="Center"  />
-                    <Button  Text="Применить" Command="{Binding ChangeModeCommand}" Margin="5" IsEnabled="{Binding IsRecievingData}"/>
+                    <Button  Text="Применить" Command="{Binding ChangeFloorNumsCommand}" Margin="5" IsEnabled="{Binding IsRecievingData}"/>
                 </StackLayout>
             </StackLayout>
         </StackLayout>

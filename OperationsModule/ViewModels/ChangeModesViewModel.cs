@@ -74,6 +74,7 @@ namespace OperationsModule.ViewModels
         private double[] _currentParameters;
         private bool _pageIsActive;
         private int _modeIndex;
+        private int floorNum;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
         BluetoothDeviceModel _selectedDevice { get; set; }
@@ -105,6 +106,9 @@ namespace OperationsModule.ViewModels
         public DelegateCommand ChangeModeCommand =>
             _changeModeCommand ?? (_changeModeCommand = new DelegateCommand(ExecuteChangeModeCommand));
 
+        private DelegateCommand _changeFloorNumsCommand;
+        public DelegateCommand ChangeFloorNumsCommand =>
+            _changeFloorNumsCommand ?? (_changeFloorNumsCommand = new DelegateCommand(ExecuteChangeFloorNumsCommand));
 
         #endregion
 
@@ -177,8 +181,17 @@ namespace OperationsModule.ViewModels
             string symbols = "m" + _modeIndex;
             SendBlueToothCommand(symbols);
         }
+
         /// <summary>
-        /// Меняем мощность
+        /// Меняем количество этажей
+        /// </summary>
+        void ExecuteChangeFloorNumsCommand()
+        {
+
+        }
+
+        /// <summary>
+        /// Присылаем команду BlueTooth модулю
         /// </summary>
         /// <param name="symbols"></param>
         async void SendBlueToothCommand(string symbols)
@@ -214,7 +227,6 @@ namespace OperationsModule.ViewModels
            RecieveData(true);
             ChangeModeEvent += ChangeModeCallBack;
             _pageIsActive = true;
-            SensorsDataRepository.FloorNumber = 10;
         }
 
         private void ChangeModeCallBack(object sender, EventArgs e)
@@ -250,15 +262,15 @@ namespace OperationsModule.ViewModels
                                 SensorsDataRepository.CurrentPressure = _currentParameters[1];
                                 SensorsDataRepository.CurrentPower = _currentParameters[2];
                                 _modeIndex = Convert.ToInt32(_currentParameters[3]);
-                                
+                                floorNum = Convert.ToInt32(_currentParameters[5]);
                                 //Для отображения начального режима
                                 if (SensorsDataRepository.SelectedModeIndex==-1)
                                 {
                                     SensorsDataRepository.SelectedModeIndex = 1;
                                 }
-                                if (SE)
+                                if (SensorsDataRepository.FloorNumber==-1)
                                 {
-
+                                    SensorsDataRepository.FloorNumber = floorNum;
                                 }
                                 //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
                                 NumsButtonsIsActive();
