@@ -16,7 +16,7 @@ namespace Services
             Mode = Modes[0];
         }
 
-        private int _floorNumber;
+        private int _floorNumber=-1;
         public int FloorNumber
         {
             get { return _floorNumber; }

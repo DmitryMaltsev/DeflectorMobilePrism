@@ -178,7 +178,7 @@ namespace OperationsModule.ViewModels
         /// </summary>
         void ExecuteChangeModeCommand()
         {
-            string symbols = "m" + _modeIndex;
+            string symbols = "m" + SensorsDataRepository.SelectedModeIndex;
             SendBlueToothCommand(symbols);
         }
 
@@ -187,7 +187,8 @@ namespace OperationsModule.ViewModels
         /// </summary>
         void ExecuteChangeFloorNumsCommand()
         {
-
+            string symbols = "f" + SensorsDataRepository.FloorNumber;
+            SendBlueToothCommand(symbols);
         }
 
         /// <summary>
