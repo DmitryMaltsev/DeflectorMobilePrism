@@ -56,13 +56,14 @@
             <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
                 <StackLayout Orientation="Vertical" HorizontalOptions="Start" BackgroundColor="#CDBEA7">
                     <Label Text="Выберите режим"  FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
-                    <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedModeIndex, Mode=TwoWay}"
+                    <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedModeIndex}"
                       HorizontalOptions="Center" WidthRequest="170" HorizontalTextAlignment="Center"/>
                     <Button  Text="Применить режим" Command="{Binding ChangeModeCommand}" Margin="5" IsEnabled="{Binding IsRecievingData}"/>
                 </StackLayout>
                 <StackLayout Orientation="Vertical" HorizontalOptions="Start" BackgroundColor="#CDBEA7">
                     <Label  Text="Количество этажей" FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
-                    <Entry  Text="{Binding SensorDataRepository.FloorNumber, Mode=TwoWay}"  Keyboard="Numeric" MaxLength="2"   HorizontalTextAlignment="Center"  />
+                    <Entry  Text="{Binding SensorDataRepository.FloorNumber, Mode=TwoWay}"  
+                            Keyboard="Numeric" MaxLength="2"   HorizontalTextAlignment="Center"  />
                     <Button  Text="Применить" Command="{Binding ChangeModeCommand}" Margin="5" IsEnabled="{Binding IsRecievingData}"/>
                 </StackLayout>
             </StackLayout>

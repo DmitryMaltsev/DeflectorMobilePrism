@@ -254,11 +254,13 @@ namespace OperationsModule.ViewModels
                                 //Для отображения начального режима
                                 if (SensorsDataRepository.SelectedModeIndex==-1)
                                 {
-                                    SensorsDataRepository.SelectedModeIndex = _modeIndex;
+                                    SensorsDataRepository.SelectedModeIndex = 1;
                                 }
-                      
+                                if (SE)
+                                {
 
-                                _ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
+                                }
+                                //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
                                 NumsButtonsIsActive();
                             }
                         }
