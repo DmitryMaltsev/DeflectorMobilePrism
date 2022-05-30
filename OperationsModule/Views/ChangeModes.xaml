@@ -28,16 +28,16 @@
             </Grid.ColumnDefinitions>
 
             <!--#region Верхняя панель с отображением данных и режима -->
-            <StackLayout  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" HorizontalOptions="Center" Orientation="Horizontal">
-                <Label Text="Название устройства: " FontSize="20" FontAttributes="Bold" HorizontalOptions="End"/>
-                <Label Text="{Binding DeviceName}" FontSize="20" FontAttributes="Bold" HorizontalOptions="Start"/>
+            <StackLayout  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" HorizontalOptions="CenterAndExpand" Orientation="Vertical">
+                <Label Text="Название устройства: " FontSize="20" FontAttributes="Bold"/>
+                <Label Text="{Binding DeviceName}" FontSize="20" FontAttributes="Bold"   HorizontalOptions="Center" />
             </StackLayout>
 
-            <Label  Grid.Row="1" Grid.Column="0"  Text="Тcels:" FontSize="18" HorizontalOptions="End"/>
-            <Label Grid.Row="1" Grid.Column="1" Text="{Binding SensorsDataRepository.CurrentTemperature}" FontSize="18" HorizontalOptions="Start"/>
-
-            <Label  Grid.Row="1" Grid.Column="2" Text="Pпа:" FontSize="18" HorizontalOptions="End"/>
-            <Label  Grid.Row="1" Grid.Column="3" Text="{Binding SensorsDataRepository.CurrentPressure}"  FontSize="18"  HorizontalOptions="Start"/>
+            <Label  Grid.Row="1" Grid.Column="0"  Text="Тcels:" FontSize="18" HorizontalOptions="End" Margin="0,10"/>
+            <Label Grid.Row="1" Grid.Column="1" Text="{Binding SensorsDataRepository.CurrentTemperature}" FontSize="18" HorizontalOptions="Start" Margin="0,10"/>
+            <Label  Grid.Row="1" Grid.Column="2" Text="Pпа:" FontSize="18" HorizontalOptions="End" Margin="0,10"/>
+            <Label  Grid.Row="1" Grid.Column="3" Text="{Binding SensorsDataRepository.CurrentPressure}"  FontSize="18"  HorizontalOptions="Start" Margin="0,10"/>
+     
 
             <StackLayout  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" HorizontalOptions="Center" Orientation="Horizontal" >
                 <Label  Text="Текущая мощность:" FontSize="18" HorizontalOptions="End"/>
@@ -48,12 +48,11 @@
                 <Label Text="Текущий режим:" FontSize="18" HorizontalOptions="End"/>
                 <Label Text="{Binding SensorsDataRepository.Mode}"  FontSize="18" HorizontalOptions="Start"/>
             </StackLayout>
-            <!--#endregion-->
+         
         </Grid>
         <!--#endregion-->
         <!--#region Изменение режима -->
-        <StackLayout Orientation="Vertical" HorizontalOptions="Start" BackgroundColor="#CDBEA7">
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Fill">
+            <StackLayout Orientation="Horizontal" BackgroundColor="#CDBEA7">
                 <StackLayout Orientation="Vertical" HorizontalOptions="Start" BackgroundColor="#CDBEA7">
                     <Label Text="Выберите режим"  FontSize="18" HorizontalOptions="Center" TextColor="Black"/>
                     <Picker ItemsSource="{Binding SensorsDataRepository.Modes}" SelectedIndex="{Binding SensorsDataRepository.SelectedModeIndex}"
@@ -67,31 +66,30 @@
                     <Button  Text="Применить" Command="{Binding ChangeFloorNumsCommand}" Margin="5" IsEnabled="{Binding IsRecievingData}"/>
                 </StackLayout>
             </StackLayout>
-        </StackLayout>
+
         <!--#endregion-->
         <!--#region Изменение мощности -->
-        <StackLayout  BackgroundColor="#CDBEA7" Margin="100,5,100,5" >
-            <Grid HorizontalOptions="Center" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*" />
-                    <RowDefinition Height="1*" />
-                    <RowDefinition Height="1*" />
-                    <RowDefinition Height="1.5*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*" />
-                </Grid.ColumnDefinitions>
-                <Button  Grid.Row="0" Grid.Column="0" Text="+" Command="{Binding DecimalOnCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
-                <Label Grid.Row="1" Grid.Column="0" Text="{Binding SensorsDataRepository.DecimalNum}"  HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
-                <Button  Grid.Row="2" Grid.Column="0" Text="-" Command="{Binding DecimalOffCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
-                <Button  Grid.Row="0" Grid.Column="1" Text="+" Command="{Binding UnitOnCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
-                <Label Grid.Row="1" Grid.Column="1" Text="{Binding SensorsDataRepository.UnitNum}"  HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
-                <Button  Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding UnitOffCommand}"  IsEnabled="{Binding SensorsDataRepository.NumsOn}" />
-                <Button  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Применить" Command="{Binding AcceptPowerCommand}"  
+        <!--Margin="100,5,100,5"-->
+        <Grid BackgroundColor="#CDBEA7" HorizontalOptions="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1.5*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Button  Grid.Row="0" Grid.Column="0" Text="+" Command="{Binding DecimalOnCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
+            <Label Grid.Row="1" Grid.Column="0" Text="{Binding SensorsDataRepository.DecimalNum}"  HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
+            <Button  Grid.Row="2" Grid.Column="0" Text="-" Command="{Binding DecimalOffCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
+            <Button  Grid.Row="0" Grid.Column="1" Text="+" Command="{Binding UnitOnCommand}" IsEnabled="{Binding SensorsDataRepository.NumsOn}"/>
+            <Label Grid.Row="1" Grid.Column="1" Text="{Binding SensorsDataRepository.UnitNum}"  HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black"/>
+            <Button  Grid.Row="2" Grid.Column="1" Text="-" Command="{Binding UnitOffCommand}"  IsEnabled="{Binding SensorsDataRepository.NumsOn}" />
+            <Button  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Применить" Command="{Binding AcceptPowerCommand}"  
                          IsEnabled="{Binding SensorsDataRepository.NumsOn}" />
-            </Grid>
-        </StackLayout>
+        </Grid>
         <!--#endregion-->
         <!--#region Лог ошибок -->
         <Label Text="{Binding SystemLogMessage, StringFormat='Сообщение:{0}'}" FontSize="18" Margin="5" HorizontalOptions="Center" BackgroundColor="#896e69" />
