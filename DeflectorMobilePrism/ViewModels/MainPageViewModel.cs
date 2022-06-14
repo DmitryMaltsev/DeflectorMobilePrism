@@ -33,7 +33,7 @@ namespace DeflectorMobilePrism.ViewModels
                 SetProperty(ref _selectedBondedDevice, value);
                 if (_selectedBondedDevice != null)
                 {
-                    ExecuteDeviceSelectedCommand();
+                  //  ExecuteDeviceSelectedCommand();
                 }
             }
         }
@@ -73,29 +73,38 @@ namespace DeflectorMobilePrism.ViewModels
         public DelegateCommand ScanDevicesCommand =>
             _scanDevicesCommand ?? (_scanDevicesCommand = new DelegateCommand(ExecuteScanDevicesCommand));
 
+        private DelegateCommand _connectDeviceCommand;
+        public DelegateCommand ConnnectDeviceCommand =>
+            _connectDeviceCommand ?? (_connectDeviceCommand = new DelegateCommand(ExecuteConnnectDeviceCommand));
+
+
+
+        private int _discoveringCounter = 0;
+        private IBluetoothAdapter _bluetoothAdapter { get; set; }
         public MainPageViewModel(INavigationService navigationService)
             : base(navigationService)
         {
             Title = "Стартовая страница";
             NavigationService = navigationService;
             AvailableDevices = new ObservableCollection<BluetoothDevice>();
-            Device.StartTimer(TimeSpan.FromMilliseconds(200), TimerTickCallBack);
+            _bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
+            Device.StartTimer(TimeSpan.FromMilliseconds(500), TimerTickCallBack);
           FillBondedDevices();
         }
 
         private bool TimerTickCallBack()
         {
+            
             if (MainActivityModel.BluetoothDevices.Count > 0)
             {
                 foreach (BluetoothDevice foundedDevice in MainActivityModel.BluetoothDevices)
                 {
-                    int coincidenceCount = AvailableDevices.Where(p => p.Name == foundedDevice.Name).Count();
+                    int coincidenceCount = AvailableDevices.Where(p => p.Name == foundedDevice.Address).Count();
                     if (AvailableDevices.Count == 0 || coincidenceCount == 0)
                     {
                         AvailableDevices.Add(foundedDevice);
                     }
                 }
-
                 //if (SelectedDevice != null && SelectedDevice.BondState == Bond.Bonded)
                 //{
 
@@ -105,17 +114,30 @@ namespace DeflectorMobilePrism.ViewModels
                 //    byte[] buffer = utf8.GetBytes(byteBuffer);
                 //    socket.OutputStream.WriteAsync(buffer, 0, buffer.Length);
                 //}
+                MainActivityModel.BluetoothDevices.Clear();
+            }
+
+            //10 секунд поиск устройств
+            if (MainActivityModel.BlutoothAdapter.IsDiscovering)
+            {
+                _discoveringCounter += 1;
+                if (_discoveringCounter > 30)
+                {
+                    MainActivityModel.BlutoothAdapter.CancelDiscovery();
+                    _discoveringCounter = 0;
+                }
             }
             return true;
         }
 
         private void FillBondedDevices()
         {
-            IBluetoothAdapter bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
-            AvailableBondedDevices = bluetoothAdapter.BondedDevices;
+          
+          
         }
 
-        private void ExecuteDeviceSelectedCommand()
+        #region Execute commands
+        void ExecuteConnnectDeviceCommand()
         {
             if (SelectedBondedDevice != null)
             {
@@ -126,11 +148,11 @@ namespace DeflectorMobilePrism.ViewModels
             }
         }
 
-
         void ExecuteScanDevicesCommand()
         {
             MainActivityModel.BluetoothDevices.Clear();
-           AvailableDevices.Clear();
+            AvailableDevices.Clear();
+            AvailableBondedDevices = _bluetoothAdapter.BondedDevices;
             try
             {
                 if (MainActivityModel.BlutoothAdapter.IsDiscovering)
@@ -140,13 +162,11 @@ namespace DeflectorMobilePrism.ViewModels
 
                 MainActivityModel.BlutoothAdapter.StartDiscovery();
             }
-
-            // var res=mBluetoothAdapter.
-
             catch (Exception ex)
             {
                 //  DisplayAlert("ex", ex.ToString(), "ok");
             }
-        }
+        } 
+        #endregion
     }
 }
