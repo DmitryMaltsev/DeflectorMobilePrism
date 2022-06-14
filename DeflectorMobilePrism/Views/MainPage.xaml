@@ -9,7 +9,9 @@
             <Label Text="Выберите соединение" VerticalOptions="Center" HorizontalOptions="Center" Margin="10" FontSize="20"  
                     FontFamily="sans-serif-light" FontAttributes="Bold" TextColor="White"/>
         </Frame>
-        <ListView x:Name="BondedDevices" ItemsSource="{Binding Available_Devices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
+        <Button Text="Поиск доступных устройств" Command="{Binding ScanDevicesCommand}"/>
+        <Label Text="Сопряженные устройства"/>
+        <ListView x:Name="BondedList" ItemsSource="{Binding AvailableBondedDevices}" SelectedItem="{Binding SelectedBondedDevice, Mode=TwoWay}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
@@ -17,7 +19,19 @@
                             <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" BackgroundColor="#896e69" TextColor="White" HorizontalTextAlignment="Center"/>
                         </StackLayout>
                     </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
+        <Label Text="Доступные устройства"/>
+        <ListView x:Name="FoundedList" ItemsSource="{Binding AvailableDevices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout  VerticalOptions="Center">
+                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" BackgroundColor="#896e69" TextColor="White" HorizontalTextAlignment="Center"/>
+                        </StackLayout>
+                    </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
