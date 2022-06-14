@@ -12,9 +12,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DeflectoreMobilePrism.Core\DeflectorMobilePrism.Core.csproj" />
     <ProjectReference Include="..\IServices\IServices.csproj" />
     <ProjectReference Include="..\OperationsModule\OperationsModule.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Mono.Android">
+      <HintPath>..\..\..\Programs\VisualStudio\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v10.0\Mono.Android.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

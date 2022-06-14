@@ -1,4 +1,6 @@
-﻿using Plugin.BluetoothClassic.Abstractions;
+﻿using Android.Bluetooth;
+
+using Plugin.BluetoothClassic.Abstractions;
 
 using Prism.Commands;
 using Prism.Mvvm;
@@ -6,6 +8,7 @@ using Prism.Navigation;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -18,8 +21,35 @@ namespace DeflectorMobilePrism.ViewModels
 
 
         public new INavigationService NavigationService { get; }
-        private BluetoothDeviceModel _selectedDevice;
-        public BluetoothDeviceModel SelectedDevice
+        private BluetoothDeviceModel _selectedBoundedDevice;
+        public BluetoothDeviceModel SelectedBoundedDevice
+        {
+            get { return _selectedBoundedDevice; }
+            set
+            {
+                SetProperty(ref _selectedBoundedDevice, value);
+                if (_selectedBoundedDevice != null)
+                {
+                    ExecuteDeviceSelectedCommand();
+                }
+            }
+        }
+        private IEnumerable<BluetoothDeviceModel> _available_Bounded_Devices;
+        public IEnumerable<BluetoothDeviceModel> Available_Bounded_Devices
+        {
+            get { return _available_Bounded_Devices; }
+            set { SetProperty(ref _available_Bounded_Devices, value); }
+        }
+
+        private ObservableCollection<BluetoothDevice> _available_devices;
+        public ObservableCollection<BluetoothDevice> Available_Devices
+        {
+            get { return _available_devices; }
+            set { SetProperty(ref _available_devices, value); }
+        }
+
+        private BluetoothDevice _selectedDevice;
+        public BluetoothDevice SelectedDevice
         {
             get { return _selectedDevice; }
             set
@@ -27,15 +57,9 @@ namespace DeflectorMobilePrism.ViewModels
                 SetProperty(ref _selectedDevice, value);
                 if (_selectedDevice != null)
                 {
-                    ExecuteDeviceSelectedCommand();
+                  //  ExecuteConnectDeviceCommand();
                 }
             }
-        }
-        private IEnumerable<BluetoothDeviceModel> _available_Devices;
-        public IEnumerable<BluetoothDeviceModel> Available_Devices
-        {
-            get { return _available_Devices; }
-            set { SetProperty(ref _available_Devices, value); }
         }
 
 
@@ -45,22 +69,21 @@ namespace DeflectorMobilePrism.ViewModels
             Title = "Стартовая страница";
             NavigationService = navigationService;
             FillBondedDevices();
-
         }
 
         private void FillBondedDevices()
         {
             IBluetoothAdapter bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
-            Available_Devices = bluetoothAdapter.BondedDevices;
+            Available_Bounded_Devices = bluetoothAdapter.BondedDevices;
         }
 
         private void ExecuteDeviceSelectedCommand()
         {
-            if (SelectedDevice!=null)
+            if (SelectedBoundedDevice != null)
             {
                 NavigationParameters parameter = new NavigationParameters();
-                parameter.Add("SelectedDevice", SelectedDevice);
-                SelectedDevice = null;
+                parameter.Add("SelectedDevice", SelectedBoundedDevice);
+                SelectedBoundedDevice = null;
                 NavigationService.NavigateAsync("ChangeModes", parameter);
             }
         }

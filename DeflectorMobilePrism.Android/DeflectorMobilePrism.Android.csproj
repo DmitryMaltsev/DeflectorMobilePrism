@@ -113,6 +113,10 @@
     <AndroidResource Include="Resources\values\strings.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DeflectoreMobilePrism.Core\DeflectorMobilePrism.Core.csproj">
+      <Project>{b9a53780-8c51-4340-818d-07bbe588ec42}</Project>
+      <Name>DeflectorMobilePrism.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeflectorMobilePrism\DeflectorMobilePrism.csproj">
       <Project>{A682884C-CB44-4A89-B752-27BB634E0ABE}</Project>
       <Name>DeflectorMobilePrism</Name>
