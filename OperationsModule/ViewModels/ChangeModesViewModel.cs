@@ -75,7 +75,6 @@ namespace OperationsModule.ViewModels
         private bool _pageIsActive;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
-        BluetoothDeviceModel _selectedDevice { get; set; }
         IBluetoothConnection _currentConnection { get; set; }
         private event EventHandler ChangeModeEvent;
 
@@ -197,8 +196,8 @@ namespace OperationsModule.ViewModels
         async void SendBlueToothCommand(string symbols)
         {
             IsRecievingData = false;
-            using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
-            {
+            //using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
+            //{
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
                 {
                     _bluetoothMessage = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
@@ -207,7 +206,7 @@ namespace OperationsModule.ViewModels
                 {
                     _bluetoothMessage = "Нет подключения при отправке";
                 }
-            }
+         //   }
             IsRecievingData = true;
            RecieveData(true);
         }
@@ -216,14 +215,13 @@ namespace OperationsModule.ViewModels
         public void OnNavigatedFrom(INavigationParameters parameters)
         {
             IsRecievingData = false;
-            _selectedDevice = null;
             _pageIsActive = false;
+            _currentConnection.Dispose();
         }
 
         public void OnNavigatedTo(INavigationParameters parameters)
         {
-            _selectedDevice = parameters.GetValue<BluetoothDeviceModel>("SelectedDevice");
-            DeviceName = _selectedDevice.Name;
+            _currentConnection = parameters.GetValue<IBluetoothConnection>("CurrentConnection");
            RecieveData(true);
             _pageIsActive = true;
         }
@@ -235,8 +233,8 @@ namespace OperationsModule.ViewModels
         /// <param name="canChangeMode"></param>
         private async void RecieveData(bool canChangeMode)
         {
-            using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
-            {
+            //using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
+              {
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
                 {
                     while (IsRecievingData)

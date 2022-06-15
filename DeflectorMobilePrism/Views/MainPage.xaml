@@ -4,7 +4,7 @@
              x:Class="DeflectorMobilePrism.Views.MainPage"
              Title="{Binding Title}" Background="#CDBEA7">
 
-    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="Start" >
+    <StackLayout x:Name="Stack" HorizontalOptions="CenterAndExpand" VerticalOptions="Start" >
         <Button Text="Поиск Bluetooth устройств" Command="{Binding ScanDevicesCommand}"/>
         <!--#region Сопряженные устройства -->
         <Frame BackgroundColor="#882426" CornerRadius="10"   VerticalOptions="Center">
@@ -15,14 +15,16 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid BackgroundColor="#896e69" Margin="0,1.5">
+                        <Grid BackgroundColor="#896e69" Margin="0,1.5" x:Name="Item">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*" />
                                 <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0" Text="{Binding Name}" FontSize="18" FontAttributes="Bold"  
                                        HorizontalOptions="Start" TextColor="White" HorizontalTextAlignment="Center" Margin="15,0"/>
-                            <Button Grid.Column="1" Text="Подключиться" Command="{Binding ConnnectBondedDeviceCommand}" HorizontalOptions="Center" FontSize="10"/>
+                            <Button Grid.Column="1" Text="Подключиться" BindingContext="{Binding Source={x:Reference BondedList}, Path=BindingContext}"   
+                            Command="{Binding ConnectBondedDeviceCommand}" FontSize="11"  HorizontalOptions="Center"
+                             CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>
@@ -35,18 +37,22 @@
             <Label Text="Доступные устройства"  HorizontalOptions="Center" VerticalOptions="Start" FontSize="20"  
                     FontFamily="sans-serif-light" FontAttributes="Bold" TextColor="White"/>
         </Frame>
+        
         <ListView x:Name="FoundedList" ItemsSource="{Binding AvailableDevices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid BackgroundColor="#896e69" Margin="0,1.5">
+                        <Grid BackgroundColor="#896e69" Margin="0,1.5" x:Name="Item">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*" />
                                 <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0" Text="{Binding Name}" FontSize="18" FontAttributes="Bold"  
                                        HorizontalOptions="Start" TextColor="White" HorizontalTextAlignment="Center" Margin="15,0"/>
-                            <Button Grid.Column="1" Text="Подключиться" Command="{Binding ConnnectDeviceCommand}" HorizontalOptions="Center" FontSize="10"/>
+                            <Button Grid.Column="1" Text="Подключиться" BindingContext="{Binding Source={x:Reference FoundedList}, Path=BindingContext}"
+                                    Command="{Binding ConnnectDeviceCommand}"  HorizontalOptions="Center" FontSize="11"
+                                      CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                                 
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

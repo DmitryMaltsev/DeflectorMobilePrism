@@ -2,6 +2,8 @@
 
 using DeflectoreMobilePrism.Core;
 
+using IServices;
+
 using Plugin.BluetoothClassic.Abstractions;
 
 using Prism.Commands;
@@ -13,6 +15,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
@@ -23,20 +26,8 @@ namespace DeflectorMobilePrism.ViewModels
 
 
         public new INavigationService NavigationService { get; }
-        #region Cопряженные устройства
-        private BluetoothDeviceModel _selectedBondedDevice;
-        public BluetoothDeviceModel SelectedBondedDevice
-        {
-            get { return _selectedBondedDevice; }
-            set
-            {
-                SetProperty(ref _selectedBondedDevice, value);
-                if (_selectedBondedDevice != null)
-                {
-                    //  ExecuteDeviceSelectedCommand();
-                }
-            }
-        }
+        public IBlueToothService BlueToothService { get; }
+
         private IEnumerable<BluetoothDeviceModel> _availableBondedDevices;
         public IEnumerable<BluetoothDeviceModel> AvailableBondedDevices
         {
@@ -44,9 +35,6 @@ namespace DeflectorMobilePrism.ViewModels
             set { SetProperty(ref _availableBondedDevices, value); }
         }
 
-        #endregion
-
-        #region Найденные устройства
         private ObservableCollection<BluetoothDevice> _availabledevices;
         public ObservableCollection<BluetoothDevice> AvailableDevices
         {
@@ -54,33 +42,20 @@ namespace DeflectorMobilePrism.ViewModels
             set { SetProperty(ref _availabledevices, value); }
         }
 
-        private BluetoothDevice _selectedDevice;
-        public BluetoothDevice SelectedDevice
-        {
-            get { return _selectedDevice; }
-            set
-            {
-                SetProperty(ref _selectedDevice, value);
-                if (_selectedDevice != null)
-                {
-                    //  ExecuteConnectDeviceCommand();
-                }
-            }
-        }
-        #endregion
 
         #region Delegate commands
+
+        private DelegateCommand<BluetoothDeviceModel> _connectBondedDeviceCommand;
+        public DelegateCommand<BluetoothDeviceModel> ConnectBondedDeviceCommand =>
+            _connectBondedDeviceCommand ?? (_connectBondedDeviceCommand = new DelegateCommand<BluetoothDeviceModel>(ExecuteConnectBondedDeviceCommand));
+
+        private DelegateCommand<BluetoothDevice> _connectDeviceCommand;
+        public DelegateCommand<BluetoothDevice> ConnnectDeviceCommand =>
+         _connectDeviceCommand ?? (_connectDeviceCommand = new DelegateCommand<BluetoothDevice>(ExecuteConnnectDeviceCommand));
+
         private DelegateCommand _scanDevicesCommand;
         public DelegateCommand ScanDevicesCommand =>
             _scanDevicesCommand ?? (_scanDevicesCommand = new DelegateCommand(ExecuteScanDevicesCommand));
-
-        private DelegateCommand _connectDeviceCommand;
-        public DelegateCommand ConnnectDeviceCommand =>
-            _connectDeviceCommand ?? (_connectDeviceCommand = new DelegateCommand(ExecuteConnnectDeviceCommand));
-
-        private DelegateCommand _connectBondedDeviceCommand;
-        public DelegateCommand ConnectBondedDeviceCommand =>
-            _connectBondedDeviceCommand ?? (_connectBondedDeviceCommand = new DelegateCommand(ExecuteConnectBondedDeviceCommand));
 
 
         #endregion
@@ -89,11 +64,13 @@ namespace DeflectorMobilePrism.ViewModels
 
         private int _discoveringCounter = 0;
         private IBluetoothAdapter _bluetoothAdapter { get; set; }
-        public MainPageViewModel(INavigationService navigationService)
+        IBluetoothConnection currentConnection { get; set; }
+        public MainPageViewModel(INavigationService navigationService, IBlueToothService blueToothService)
             : base(navigationService)
         {
             Title = "Стартовая страница";
             NavigationService = navigationService;
+            BlueToothService = blueToothService;
             AvailableDevices = new ObservableCollection<BluetoothDevice>();
             _bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
             Device.StartTimer(TimeSpan.FromMilliseconds(500), TimerTickCallBack);
@@ -106,13 +83,29 @@ namespace DeflectorMobilePrism.ViewModels
             {
                 foreach (BluetoothDevice foundedDevice in MainActivityModel.BluetoothDevices)
                 {
-                    int coincidenceCount = AvailableDevices.Where(p => p.Name == foundedDevice.Address).Count();
+                    int coincidenceCount = AvailableDevices.Where(p => p.Address == foundedDevice.Address).Count();
                     if (AvailableDevices.Count == 0 || coincidenceCount == 0)
                     {
                         AvailableDevices.Add(foundedDevice);
                     }
                 }
-                //if (SelectedDevice != null && SelectedDevice.BondState == Bond.Bonded)
+                if (currentConnection != null)
+                {
+                    _ = TryToConnect();
+                }
+
+                async Task TryToConnect()
+                {
+                    if ( await currentConnection.RetryConnectAsync(retriesCount: 3))
+                    {
+                        NavigationParameters parameter = new NavigationParameters();
+                        parameter.Add("CurrentConnection", currentConnection);
+                        _ = NavigationService.NavigateAsync("ChangeModes", parameter);
+                    }
+
+                }
+                    
+                    //if (SelectedDevice != null && SelectedDevice.BondState == Bond.Bonded)
                 //{
 
                 //    string sendingParameters = "0,20,30,40,50,60" + '\n';
@@ -124,7 +117,7 @@ namespace DeflectorMobilePrism.ViewModels
                 MainActivityModel.BluetoothDevices.Clear();
             }
 
-            //10 секунд поиск устройств
+            //N секунд поиск устройств
             if (MainActivityModel.BlutoothAdapter.IsDiscovering)
             {
                 _discoveringCounter += 1;
@@ -139,10 +132,33 @@ namespace DeflectorMobilePrism.ViewModels
 
         #region Execute commands
 
+        void ExecuteConnectBondedDeviceCommand(BluetoothDeviceModel bluetoothDeviceModel)
+        {
+            if (bluetoothDeviceModel != null)
+            {
+                using (currentConnection = BlueToothService.CreateConnection(bluetoothDeviceModel)) ;
+            }
+        }
+
+        void ExecuteConnnectDeviceCommand(BluetoothDevice bluetoothDevice)
+        {
+            if (bluetoothDevice != null)
+            {
+                NavigationParameters parameter = new NavigationParameters();
+                //Шаманство^^
+                BluetoothDeviceModel currentDevice = new BluetoothDeviceModel(bluetoothDevice.Address, bluetoothDevice.Name);
+                using (currentConnection = BlueToothService.CreateConnection(currentDevice)) ;
+            }
+        }
+
+
+
+
         void ExecuteScanDevicesCommand()
         {
             MainActivityModel.BluetoothDevices.Clear();
             AvailableDevices.Clear();
+            //Список сопрояженных устройств(уже есть в тлф)
             AvailableBondedDevices = _bluetoothAdapter.BondedDevices;
             try
             {
@@ -156,30 +172,6 @@ namespace DeflectorMobilePrism.ViewModels
             catch (Exception ex)
             {
                 //  DisplayAlert("ex", ex.ToString(), "ok");
-            }
-        }
-
-        void ExecuteConnnectDeviceCommand()
-        {
-            if (SelectedDevice != null)
-            {
-                NavigationParameters parameter = new NavigationParameters();
-                //Шаманство^^
-                BluetoothDeviceModel currentDevice = new BluetoothDeviceModel(SelectedDevice.Address,SelectedDevice.Name);
-                parameter.Add("SelectedDevice", currentDevice);
-                SelectedBondedDevice = null;
-                NavigationService.NavigateAsync("ChangeModes", parameter);
-            }
-        }
-
-        void ExecuteConnectBondedDeviceCommand()
-        {
-            if (SelectedBondedDevice!= null)
-            {
-                NavigationParameters parameter = new NavigationParameters();
-                parameter.Add("SelectedDevice", SelectedBondedDevice);
-                SelectedBondedDevice = null;
-                NavigationService.NavigateAsync("ChangeModes", parameter);
             }
         }
         #endregion
