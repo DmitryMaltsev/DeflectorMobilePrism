@@ -80,7 +80,7 @@ namespace DeflectorMobilePrism.ViewModels
 
         private bool TimerTickCallBack()
         {
-
+            //Если найдено устройство, проверяем на уникальность, иначе не добавляем
             if (MainActivityModel.BluetoothDevices.Count > 0)
             {
                 foreach (BluetoothDevice foundedDevice in MainActivityModel.BluetoothDevices)
@@ -91,27 +91,9 @@ namespace DeflectorMobilePrism.ViewModels
                         AvailableDevices.Add(foundedDevice);
                     }
                 }
-                if (startConnection)
-                {
-                    _ = TryToConnect();
-                }
 
-                async Task TryToConnect()
-                {
-                    if ( await currentConnection.RetryConnectAsync(retriesCount: 3))
-                    {
-                        NavigationParameters parameter = new NavigationParameters();
-                        parameter.Add("CurrentConnection", currentConnection);
-                        _ = NavigationService.NavigateAsync("ChangeModes", parameter);
-                    }
-                    else
-                    {
-                        startConnection = false;
-                    }
-
-                }
-                    
-                    //if (SelectedDevice != null && SelectedDevice.BondState == Bond.Bonded)
+                MainActivityModel.BluetoothDevices.Clear();
+                //if (SelectedDevice != null && SelectedDevice.BondState == Bond.Bonded)
                 //{
 
                 //    string sendingParameters = "0,20,30,40,50,60" + '\n';
@@ -120,7 +102,7 @@ namespace DeflectorMobilePrism.ViewModels
                 //    byte[] buffer = utf8.GetBytes(byteBuffer);
                 //    socket.OutputStream.WriteAsync(buffer, 0, buffer.Length);
                 //}
-                MainActivityModel.BluetoothDevices.Clear();
+
             }
 
             //N секунд поиск устройств
@@ -133,7 +115,27 @@ namespace DeflectorMobilePrism.ViewModels
                     _discoveringCounter = 0;
                 }
             }
+
+            //Если нажали кнопку подключиться
+            if (startConnection)
+            {
+                _ = TryToConnect();
+            }
             return true;
+        }
+
+        async Task TryToConnect()
+        {
+            if (await currentConnection.RetryConnectAsync(retriesCount: 3))
+            {
+                NavigationParameters parameter = new NavigationParameters();
+                parameter.Add("CurrentConnection", currentConnection);
+                _ = NavigationService.NavigateAsync("ChangeModes", parameter);
+            }
+            else
+            {
+                startConnection = false;
+            }
         }
 
         #region Execute commands
