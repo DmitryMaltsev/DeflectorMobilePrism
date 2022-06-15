@@ -76,10 +76,11 @@ namespace OperationsModule.ViewModels
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
         IBluetoothConnection _currentConnection { get; set; }
+        BluetoothDeviceModel _currentDevice { get; set; }
         private event EventHandler ChangeModeEvent;
 
         #region Delegatecommands
-      
+
         private DelegateCommand _decimalOnCommand;
         public DelegateCommand DecimalOnCommand =>
             _decimalOnCommand ?? (_decimalOnCommand = new DelegateCommand(ExecuteDecimalOnCommand));
@@ -198,17 +199,17 @@ namespace OperationsModule.ViewModels
             IsRecievingData = false;
             //using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
             //{
-                if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
-                {
-                    _bluetoothMessage = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
-                }
-                else
-                {
-                    _bluetoothMessage = "Нет подключения при отправке";
-                }
-         //   }
+            if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
+            {
+                _bluetoothMessage = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
+            }
+            else
+            {
+                _bluetoothMessage = "Нет подключения при отправке";
+            }
+            //   }
             IsRecievingData = true;
-           RecieveData(true);
+            RecieveData(true);
         }
         #endregion
 
@@ -221,8 +222,8 @@ namespace OperationsModule.ViewModels
 
         public void OnNavigatedTo(INavigationParameters parameters)
         {
-            _currentConnection = parameters.GetValue<IBluetoothConnection>("CurrentConnection");
-           RecieveData(true);
+            _currentDevice = parameters.GetValue<BluetoothDeviceModel>("CurrentDevice");
+            RecieveData(true);
             _pageIsActive = true;
         }
 
@@ -233,15 +234,14 @@ namespace OperationsModule.ViewModels
         /// <param name="canChangeMode"></param>
         private async void RecieveData(bool canChangeMode)
         {
-            //using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
-              {
-                if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
+            using (_currentConnection = BlueToothService.CreateConnection(_currentDevice))
+            {
+                try
                 {
+                    await _currentConnection.RetryConnectAsync(retriesCount: 3);
                     while (IsRecievingData)
                     {
                         (_currentParameters, BliuetoothLogMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
-                        try
-                        {
                             //Дополнительная проверка на полученные значения, т.к. проверка на соединение не всегда работает
                             double dataSumm = _currentParameters[0] + _currentParameters[1] + _currentParameters[2] + _currentParameters[3] + _currentParameters[4];
                             if (dataSumm != 0)
@@ -249,14 +249,14 @@ namespace OperationsModule.ViewModels
                                 SensorsDataRepository.CurrentTemperature = _currentParameters[0];
                                 SensorsDataRepository.CurrentPressure = _currentParameters[1];
                                 SensorsDataRepository.CurrentPower = _currentParameters[2];
-                               int modeIndex = Convert.ToInt32(_currentParameters[3]);
+                                int modeIndex = Convert.ToInt32(_currentParameters[3]);
                                 int floorNum = Convert.ToInt32(_currentParameters[5]);
                                 //Для отображения начального режима
-                                if (SensorsDataRepository.SelectedModeIndex==-1)
+                                if (SensorsDataRepository.SelectedModeIndex == -1)
                                 {
                                     SensorsDataRepository.SelectedModeIndex = modeIndex;
                                 }
-                                if (SensorsDataRepository.FloorNumber==-1)
+                                if (SensorsDataRepository.FloorNumber == -1)
                                 {
                                     SensorsDataRepository.FloorNumber = floorNum;
                                 }
@@ -264,17 +264,14 @@ namespace OperationsModule.ViewModels
                                 //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
                                 _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            SystemLogMessage = $"{ ex.Message} {ex.StackTrace}";
-                        }
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    BliuetoothLogMessage = "Данные не приняты";
+
+                    SystemLogMessage = $"{ ex.Message} {ex.StackTrace}";
                 }
+
             }
         }
     }

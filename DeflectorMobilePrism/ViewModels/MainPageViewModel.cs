@@ -28,6 +28,13 @@ namespace DeflectorMobilePrism.ViewModels
         public new INavigationService NavigationService { get; }
         public IBlueToothService BlueToothService { get; }
 
+        private BluetoothDeviceModel _currentDevice { get; set; }
+        private int _discoveringCounter = 0;
+        private IBluetoothAdapter _bluetoothAdapter { get; set; }
+        IBluetoothConnection currentConnection { get; set; }
+        private bool startConnection;
+
+        #region Rising properties
         private IEnumerable<BluetoothDeviceModel> _availableBondedDevices;
         public IEnumerable<BluetoothDeviceModel> AvailableBondedDevices
         {
@@ -42,6 +49,7 @@ namespace DeflectorMobilePrism.ViewModels
             set { SetProperty(ref _availabledevices, value); }
         }
 
+        #endregion
 
         #region Delegate commands
 
@@ -61,11 +69,6 @@ namespace DeflectorMobilePrism.ViewModels
         #endregion
 
 
-
-        private int _discoveringCounter = 0;
-        private IBluetoothAdapter _bluetoothAdapter { get; set; }
-        IBluetoothConnection currentConnection { get; set; }
-        private bool startConnection;
         public MainPageViewModel(INavigationService navigationService, IBlueToothService blueToothService)
             : base(navigationService)
         {
@@ -124,12 +127,16 @@ namespace DeflectorMobilePrism.ViewModels
             return true;
         }
 
+        /// <summary>
+        /// Подключаемся
+        /// </summary>
+        /// <returns></returns>
         async Task TryToConnect()
         {
             if (await currentConnection.RetryConnectAsync(retriesCount: 3))
             {
                 NavigationParameters parameter = new NavigationParameters();
-                parameter.Add("CurrentConnection", currentConnection);
+                parameter.Add("CurrentDevice", _currentDevice);
                 _ = NavigationService.NavigateAsync("ChangeModes", parameter);
             }
             else
@@ -144,6 +151,7 @@ namespace DeflectorMobilePrism.ViewModels
         {
             if (bluetoothDeviceModel != null)
             {
+                _currentDevice = bluetoothDeviceModel;
                 using (currentConnection = BlueToothService.CreateConnection(bluetoothDeviceModel)) ;
                 startConnection = true;
             }
@@ -156,7 +164,8 @@ namespace DeflectorMobilePrism.ViewModels
                 NavigationParameters parameter = new NavigationParameters();
                 //Шаманство^^
                 BluetoothDeviceModel currentDevice = new BluetoothDeviceModel(bluetoothDevice.Address, bluetoothDevice.Name);
-                using (currentConnection = BlueToothService.CreateConnection(currentDevice)) ;
+                _currentDevice = currentDevice;
+                using (currentConnection = BlueToothService.CreateConnection(currentDevice));
                 startConnection = true;
             }
         }
