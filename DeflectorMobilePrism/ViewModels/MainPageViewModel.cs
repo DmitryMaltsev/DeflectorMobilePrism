@@ -65,6 +65,7 @@ namespace DeflectorMobilePrism.ViewModels
         private int _discoveringCounter = 0;
         private IBluetoothAdapter _bluetoothAdapter { get; set; }
         IBluetoothConnection currentConnection { get; set; }
+        private bool startConnection;
         public MainPageViewModel(INavigationService navigationService, IBlueToothService blueToothService)
             : base(navigationService)
         {
@@ -74,6 +75,7 @@ namespace DeflectorMobilePrism.ViewModels
             AvailableDevices = new ObservableCollection<BluetoothDevice>();
             _bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
             Device.StartTimer(TimeSpan.FromMilliseconds(500), TimerTickCallBack);
+            startConnection = false;
         }
 
         private bool TimerTickCallBack()
@@ -89,7 +91,7 @@ namespace DeflectorMobilePrism.ViewModels
                         AvailableDevices.Add(foundedDevice);
                     }
                 }
-                if (currentConnection != null)
+                if (startConnection)
                 {
                     _ = TryToConnect();
                 }
@@ -101,6 +103,10 @@ namespace DeflectorMobilePrism.ViewModels
                         NavigationParameters parameter = new NavigationParameters();
                         parameter.Add("CurrentConnection", currentConnection);
                         _ = NavigationService.NavigateAsync("ChangeModes", parameter);
+                    }
+                    else
+                    {
+                        startConnection = false;
                     }
 
                 }
@@ -137,6 +143,7 @@ namespace DeflectorMobilePrism.ViewModels
             if (bluetoothDeviceModel != null)
             {
                 using (currentConnection = BlueToothService.CreateConnection(bluetoothDeviceModel)) ;
+                startConnection = true;
             }
         }
 
@@ -148,6 +155,7 @@ namespace DeflectorMobilePrism.ViewModels
                 //Шаманство^^
                 BluetoothDeviceModel currentDevice = new BluetoothDeviceModel(bluetoothDevice.Address, bluetoothDevice.Name);
                 using (currentConnection = BlueToothService.CreateConnection(currentDevice)) ;
+                startConnection = true;
             }
         }
 
