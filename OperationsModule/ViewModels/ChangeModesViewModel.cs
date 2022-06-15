@@ -1,11 +1,8 @@
 ﻿using IServices;
-
 using Plugin.BluetoothClassic.Abstractions;
-
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -77,7 +74,6 @@ namespace OperationsModule.ViewModels
         public IBlueToothService BlueToothService { get; }
         IBluetoothConnection _currentConnection { get; set; }
         BluetoothDeviceModel _currentDevice { get; set; }
-        private event EventHandler ChangeModeEvent;
 
         #region Delegatecommands
 
@@ -199,17 +195,22 @@ namespace OperationsModule.ViewModels
             IsRecievingData = false;
             //using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
             //{
-            if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
+            try
             {
-                _bluetoothMessage = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
+                if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
+                {
+                    _bluetoothMessage = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                _bluetoothMessage = "Нет подключения при отправке";
+
+                SystemLogMessage = $"{ ex.Message } {ex.StackTrace}";
             }
+           
             //   }
             IsRecievingData = true;
-            RecieveData(true);
+       //     RecieveData(true);
         }
         #endregion
 
@@ -220,10 +221,10 @@ namespace OperationsModule.ViewModels
             _currentConnection.Dispose();
         }
 
-        public void OnNavigatedTo(INavigationParameters parameters)
+        public async void OnNavigatedTo(INavigationParameters parameters)
         {
             _currentDevice = parameters.GetValue<BluetoothDeviceModel>("CurrentDevice");
-            RecieveData(true);
+           // await RecieveData(true);
             _pageIsActive = true;
         }
 
@@ -232,46 +233,46 @@ namespace OperationsModule.ViewModels
         /// Получаем данные с BlueTooth
         /// </summary>
         /// <param name="canChangeMode"></param>
-        private async void RecieveData(bool canChangeMode)
+        private async Task RecieveData(bool canChangeMode)
         {
             using (_currentConnection = BlueToothService.CreateConnection(_currentDevice))
             {
-                try
+                while (IsRecievingData)
                 {
-                    await _currentConnection.RetryConnectAsync(retriesCount: 3);
-                    while (IsRecievingData)
+                    try
                     {
+                        await _currentConnection.RetryConnectAsync(retriesCount: 3);
+
                         (_currentParameters, BliuetoothLogMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
-                            //Дополнительная проверка на полученные значения, т.к. проверка на соединение не всегда работает
-                            double dataSumm = _currentParameters[0] + _currentParameters[1] + _currentParameters[2] + _currentParameters[3] + _currentParameters[4];
-                            if (dataSumm != 0)
+                        //Дополнительная проверка на полученные значения, т.к. проверка на соединение не всегда работает
+                        double dataSumm = _currentParameters[0] + _currentParameters[1] + _currentParameters[2] + _currentParameters[3] + _currentParameters[4];
+                        if (dataSumm != 0)
+                        {
+                            SensorsDataRepository.CurrentTemperature = _currentParameters[0];
+                            SensorsDataRepository.CurrentPressure = _currentParameters[1];
+                            SensorsDataRepository.CurrentPower = _currentParameters[2];
+                            int modeIndex = Convert.ToInt32(_currentParameters[3]);
+                            int floorNum = Convert.ToInt32(_currentParameters[5]);
+                            //Для отображения начального режима
+                            if (SensorsDataRepository.SelectedModeIndex == -1)
                             {
-                                SensorsDataRepository.CurrentTemperature = _currentParameters[0];
-                                SensorsDataRepository.CurrentPressure = _currentParameters[1];
-                                SensorsDataRepository.CurrentPower = _currentParameters[2];
-                                int modeIndex = Convert.ToInt32(_currentParameters[3]);
-                                int floorNum = Convert.ToInt32(_currentParameters[5]);
-                                //Для отображения начального режима
-                                if (SensorsDataRepository.SelectedModeIndex == -1)
-                                {
-                                    SensorsDataRepository.SelectedModeIndex = modeIndex;
-                                }
-                                if (SensorsDataRepository.FloorNumber == -1)
-                                {
-                                    SensorsDataRepository.FloorNumber = floorNum;
-                                }
-                                //Потому допишу. Не знаю чем это будет
-                                //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
-                                _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
+                                SensorsDataRepository.SelectedModeIndex = modeIndex;
                             }
+                            if (SensorsDataRepository.FloorNumber == -1)
+                            {
+                                SensorsDataRepository.FloorNumber = floorNum;
+                            }
+                            //Потому допишу. Не знаю чем это будет
+                            //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
+                            _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        SystemLogMessage = $"{ ex.Message } {ex.StackTrace}";
+                    }
+                    await Task.Delay(300);
                 }
-                catch (Exception ex)
-                {
-
-                    SystemLogMessage = $"{ ex.Message} {ex.StackTrace}";
-                }
-
             }
         }
     }
