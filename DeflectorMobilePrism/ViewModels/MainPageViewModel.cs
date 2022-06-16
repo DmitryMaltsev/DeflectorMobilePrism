@@ -123,6 +123,7 @@ namespace DeflectorMobilePrism.ViewModels
             if (startConnection)
             {
                 _ = TryToConnect();
+                startConnection = false;
             }
             return true;
         }
@@ -134,15 +135,13 @@ namespace DeflectorMobilePrism.ViewModels
         async Task TryToConnect()
         {
             if (await currentConnection.RetryConnectAsync(retriesCount: 3))
-            {
+            { 
                 NavigationParameters parameter = new NavigationParameters();
-                parameter.Add("CurrentDevice", _currentDevice);
-                _ = NavigationService.NavigateAsync("ChangeModes", parameter);
-            }
-            else
-            {
-                startConnection = false;
-            }
+            parameter.Add("CurrentDevice", _currentDevice);
+            currentConnection.Dispose();
+            _ = NavigationService.NavigateAsync("ChangeModes", parameter);
+        }
+     
         }
 
         #region Execute commands

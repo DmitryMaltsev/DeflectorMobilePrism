@@ -1,8 +1,11 @@
 ﻿using IServices;
+
 using Plugin.BluetoothClassic.Abstractions;
+
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -33,19 +36,6 @@ namespace OperationsModule.ViewModels
             get { return _bluetoothLogMessage; }
             set { SetProperty(ref _bluetoothLogMessage, value); }
         }
-
-
-        private bool _isRecievingData = true;
-        public bool IsRecievingData
-        {
-            get { return _isRecievingData; }
-            set
-            {
-                SetProperty(ref _isRecievingData, value);
-            }
-        }
-
-
         private string _deviceName;
         public string DeviceName
         {
@@ -66,14 +56,15 @@ namespace OperationsModule.ViewModels
             }
         }
         #endregion
-
-        private string _bluetoothMessage;
-        private double[] _currentParameters;
-        private bool _pageIsActive;
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
         IBluetoothConnection _currentConnection { get; set; }
         BluetoothDeviceModel _currentDevice { get; set; }
+        private string _bluetoothMessage;
+        private double[] _currentParameters;
+        private bool _pageIsActive;
+        private bool _isRecievingData;
+        private bool _needToConnect;
 
         #region Delegatecommands
 
@@ -192,31 +183,37 @@ namespace OperationsModule.ViewModels
         /// <param name="symbols"></param>
         async void SendBlueToothCommand(string symbols)
         {
-            IsRecievingData = false;
-            //using (_currentConnection = BlueToothService.CreateConnection(_selectedDevice))
-            //{
+            _isRecievingData = false;
+            //     using (_currentConnection = BlueToothService.CreateConnection(_currentDevice))
+            //      {
             try
             {
                 if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
                 {
+                    SystemLogMessage = "Работа в норме(отпр)";
+
                     _bluetoothMessage = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
+                }
+                else
+                {
+                    SystemLogMessage = "Ошибка соединения(отпр)";
                 }
             }
             catch (Exception ex)
             {
+                SystemLogMessage = ex.Message;
 
-                SystemLogMessage = $"{ ex.Message } {ex.StackTrace}";
             }
-           
             //   }
-            IsRecievingData = true;
-       //     RecieveData(true);
+            _needToConnect = true;
+            _isRecievingData = true;
         }
         #endregion
 
         public void OnNavigatedFrom(INavigationParameters parameters)
         {
-            IsRecievingData = false;
+            _isRecievingData = false;
+            _needToConnect = false;
             _pageIsActive = false;
             _currentConnection.Dispose();
         }
@@ -224,8 +221,11 @@ namespace OperationsModule.ViewModels
         public async void OnNavigatedTo(INavigationParameters parameters)
         {
             _currentDevice = parameters.GetValue<BluetoothDeviceModel>("CurrentDevice");
-           // await RecieveData(true);
+            _needToConnect = true;
+            _isRecievingData = true;
+            await RecieveData(true);
             _pageIsActive = true;
+            SystemLogMessage = string.Empty;
         }
 
 
@@ -237,43 +237,60 @@ namespace OperationsModule.ViewModels
         {
             using (_currentConnection = BlueToothService.CreateConnection(_currentDevice))
             {
-                while (IsRecievingData)
-                {
-                    try
-                    {
-                        await _currentConnection.RetryConnectAsync(retriesCount: 3);
 
-                        (_currentParameters, BliuetoothLogMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
-                        //Дополнительная проверка на полученные значения, т.к. проверка на соединение не всегда работает
-                        double dataSumm = _currentParameters[0] + _currentParameters[1] + _currentParameters[2] + _currentParameters[3] + _currentParameters[4];
-                        if (dataSumm != 0)
-                        {
-                            SensorsDataRepository.CurrentTemperature = _currentParameters[0];
-                            SensorsDataRepository.CurrentPressure = _currentParameters[1];
-                            SensorsDataRepository.CurrentPower = _currentParameters[2];
-                            int modeIndex = Convert.ToInt32(_currentParameters[3]);
-                            int floorNum = Convert.ToInt32(_currentParameters[5]);
-                            //Для отображения начального режима
-                            if (SensorsDataRepository.SelectedModeIndex == -1)
-                            {
-                                SensorsDataRepository.SelectedModeIndex = modeIndex;
-                            }
-                            if (SensorsDataRepository.FloorNumber == -1)
-                            {
-                                SensorsDataRepository.FloorNumber = floorNum;
-                            }
-                            //Потому допишу. Не знаю чем это будет
-                            //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
-                            _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
-                        }
-                    }
-                    catch (Exception ex)
+
+                {
+                    while (_isRecievingData)
                     {
-                        SystemLogMessage = $"{ ex.Message } {ex.StackTrace}";
+                        try
+                        {
+                            //Когда первый раз зашли на получение или переподключаемся после передачи данных
+                            if (_needToConnect)
+                            {
+                                await _currentConnection.RetryConnectAsync(retriesCount: 3);
+                                _needToConnect = false;
+                            }
+                           
+                            (_currentParameters, SystemLogMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
+                            //Дополнительная проверка на полученные значения, т.к. проверка на соединение не всегда работает
+                            double dataSumm = _currentParameters[0] + _currentParameters[1] + _currentParameters[2] + _currentParameters[3] + _currentParameters[4];
+                            if (dataSumm != 0)
+                            {
+                                SensorsDataRepository.CurrentTemperature = _currentParameters[0];
+                                SensorsDataRepository.CurrentPressure = _currentParameters[1];
+                                SensorsDataRepository.CurrentPower = _currentParameters[2];
+                                int modeIndex = Convert.ToInt32(_currentParameters[3]);
+                                int floorNum = Convert.ToInt32(_currentParameters[5]);
+                                //Для отображения начального режима
+                                if (SensorsDataRepository.SelectedModeIndex == -1)
+                                {
+                                    SensorsDataRepository.SelectedModeIndex = modeIndex;
+                                }
+                                if (SensorsDataRepository.FloorNumber == -1)
+                                {
+                                    SensorsDataRepository.FloorNumber = floorNum;
+                                }
+                                //Потому допишу. Не знаю чем это будет
+                                //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
+                                _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            await _currentConnection.RetryConnectAsync(retriesCount: 3);
+                        }
+                        await Task.Delay(100);
                     }
-                    await Task.Delay(300);
                 }
+
+
+
             }
         }
+
+
     }
+
+
 }
+

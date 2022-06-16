@@ -28,33 +28,25 @@ namespace Services
 
         public async Task<(double[], string)> RecieveSensorsData(IBluetoothConnection connection)
         {
-            double[] currentParameters = new double[5];
+            double[] currentParameters = new double[6];
             string message = "";
-            byte[] buffer = new byte[20];
-                if (!(await connection.RetryReciveAsync(buffer,0,buffer.Length)).Succeeded)
-                {
-                    message = "Нет подключения при получении";
-                }
-                else
-                {
-                    try
-                    {
-                        string bufString = Encoding.UTF8.GetString(buffer);
-                        string[] stringArray = bufString.Split('d');
-                        currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.InvariantCulture);
-                        currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.InvariantCulture);
-                        currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.InvariantCulture);
-                        currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.InvariantCulture);
-                        currentParameters[4] = double.Parse(stringArray[4], NumberStyles.Any, CultureInfo.InvariantCulture);
-                        currentParameters[5] = double.Parse(stringArray[5], NumberStyles.Any, CultureInfo.InvariantCulture);
-                    message = "Данные передаются";
-                    }
-                    catch (Exception ex)
-                    {
-                        message = ex.Message;
-                    }
-                }
-            await Task.Delay(50);
+            byte[] buffer = new byte[25];
+            if (!(await connection.RetryReciveAsync(buffer, 0, buffer.Length)).Succeeded)
+            {
+                message = "Ошибка соединения(получ)";
+            }
+            else
+            {
+                string bufString = Encoding.UTF8.GetString(buffer);
+                string[] stringArray = bufString.Split('d');
+                currentParameters[0] = double.Parse(stringArray[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+                currentParameters[1] = double.Parse(stringArray[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+                currentParameters[2] = double.Parse(stringArray[2], NumberStyles.Any, CultureInfo.InvariantCulture);
+                currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.InvariantCulture);
+                currentParameters[4] = double.Parse(stringArray[4], NumberStyles.Any, CultureInfo.InvariantCulture);
+                currentParameters[5] = double.Parse(stringArray[5], NumberStyles.Any, CultureInfo.InvariantCulture);
+                message = "Работа в норме(получ)";
+            }
             return (currentParameters, message);
         }
 
@@ -63,22 +55,13 @@ namespace Services
             string message = "";
             using (connection)
             {
-                try
-                {
-                    if (!sendingParameters.Contains("\n"))
-                        sendingParameters += '\n';
-                    char[] byteBuffer = sendingParameters.ToCharArray();
-                    Encoding utf8 = Encoding.UTF8;
-                    byte[] buffer = utf8.GetBytes(byteBuffer);
-                    if (!await connection.RetryTransmitAsync(buffer, 0, buffer.Length))
-                    {
-                        message = "Данные не Отправлены";
-                    }
-                }
-                catch
-                {
-                    message = "Данные не Отправлены";
-                }
+
+                if (!sendingParameters.Contains("\n"))
+                    sendingParameters += '\n';
+                char[] byteBuffer = sendingParameters.ToCharArray();
+                Encoding utf8 = Encoding.UTF8;
+                byte[] buffer = utf8.GetBytes(byteBuffer);
+                await connection.RetryTransmitAsync(buffer, 0, buffer.Length);
             }
             return message;
         }
