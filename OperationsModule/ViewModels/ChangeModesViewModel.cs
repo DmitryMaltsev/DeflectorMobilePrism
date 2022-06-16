@@ -247,10 +247,13 @@ namespace OperationsModule.ViewModels
                             //Когда первый раз зашли на получение или переподключаемся после передачи данных
                             if (_needToConnect)
                             {
-                                await _currentConnection.RetryConnectAsync(retriesCount: 3);
+                                if (!await _currentConnection.RetryConnectAsync(retriesCount: 3))
+                                {
+                                    _isRecievingData = false;
+                                    SystemLogMessage = "Ошибка соединения(получ)";
+                                }
                                 _needToConnect = false;
                             }
-                           
                             (_currentParameters, SystemLogMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
                             //Дополнительная проверка на полученные значения, т.к. проверка на соединение не всегда работает
                             double dataSumm = _currentParameters[0] + _currentParameters[1] + _currentParameters[2] + _currentParameters[3] + _currentParameters[4];
