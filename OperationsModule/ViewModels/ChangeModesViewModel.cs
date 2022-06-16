@@ -59,12 +59,13 @@ namespace OperationsModule.ViewModels
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
         IBluetoothConnection _currentConnection { get; set; }
+        IBluetoothConnection _sendingConnection { get; set; }
         BluetoothDeviceModel _currentDevice { get; set; }
-        private string _bluetoothMessage;
         private double[] _currentParameters;
         private bool _pageIsActive;
         private bool _isRecievingData;
-        private bool _needToConnect;
+        private bool _needToSendData;
+        private string _symbols;
 
         #region Delegatecommands
 
@@ -103,8 +104,6 @@ namespace OperationsModule.ViewModels
             SensorsDataRepository = sensorsDataRepository;
             BlueToothService = blueToothService;
             _currentParameters = new double[5];
-            _bluetoothMessage = "";
-
         }
 
         #region ExecuteMethods
@@ -152,10 +151,11 @@ namespace OperationsModule.ViewModels
         /// </summary>
         void ExecuteAcceptPowerCommand()
         {
-            string symbols = "p" + SensorsDataRepository.DecimalNum.ToString() + SensorsDataRepository.UnitNum.ToString();
+            _symbols = "p" + SensorsDataRepository.DecimalNum.ToString() + SensorsDataRepository.UnitNum.ToString();
             SensorsDataRepository.NumsOn = false;
-            SendBlueToothCommand(symbols);
+            // SendBlueToothCommand(symbols);
             SensorsDataRepository.NumsOn = true;
+            _needToSendData = true;
         }
 
 
@@ -164,8 +164,9 @@ namespace OperationsModule.ViewModels
         /// </summary>
         void ExecuteChangeModeCommand()
         {
-            string symbols = "m" + SensorsDataRepository.SelectedModeIndex;
-            SendBlueToothCommand(symbols);
+            _symbols = "m" + SensorsDataRepository.SelectedModeIndex;
+            //  await SendBlueToothCommand(symbols);
+            _needToSendData = true;
         }
 
         /// <summary>
@@ -173,47 +174,38 @@ namespace OperationsModule.ViewModels
         /// </summary>
         void ExecuteChangeFloorNumsCommand()
         {
-            string symbols = "f" + SensorsDataRepository.FloorNumber;
-            SendBlueToothCommand(symbols);
+            _symbols = "f" + SensorsDataRepository.FloorNumber;
+            // await SendBlueToothCommand(symbols);
+            _needToSendData = true;
         }
 
         /// <summary>
         /// Присылаем команду BlueTooth модулю
         /// </summary>
         /// <param name="symbols"></param>
-        async void SendBlueToothCommand(string symbols)
+        async Task<bool> SendBlueToothCommand(string symbols)
         {
-            _isRecievingData = false;
-            //     using (_currentConnection = BlueToothService.CreateConnection(_currentDevice))
-            //      {
             try
             {
-                if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
-                {
-                    SystemLogMessage = "Работа в норме(отпр)";
-
-                    _bluetoothMessage = await Task.Run(() => BlueToothService.SendMode(_currentConnection, symbols));
-                }
-                else
-                {
-                    SystemLogMessage = "Ошибка соединения(отпр)";
-                }
+                SystemLogMessage= await BlueToothService.SendMode(_currentConnection, symbols);
+                return true;
+            
             }
             catch (Exception ex)
             {
                 SystemLogMessage = ex.Message;
-
+                return false;
             }
-            //   }
-            _needToConnect = true;
-            _isRecievingData = true;
+            finally
+            {
+                _needToSendData = false;
+            }
         }
         #endregion
 
         public void OnNavigatedFrom(INavigationParameters parameters)
         {
             _isRecievingData = false;
-            _needToConnect = false;
             _pageIsActive = false;
             _currentConnection.Dispose();
         }
@@ -221,11 +213,11 @@ namespace OperationsModule.ViewModels
         public async void OnNavigatedTo(INavigationParameters parameters)
         {
             _currentDevice = parameters.GetValue<BluetoothDeviceModel>("CurrentDevice");
-            _needToConnect = true;
             _isRecievingData = true;
+            _needToSendData = false;
             await RecieveData(true);
             _pageIsActive = true;
-            SystemLogMessage = string.Empty;
+
         }
 
 
@@ -235,25 +227,15 @@ namespace OperationsModule.ViewModels
         /// <param name="canChangeMode"></param>
         private async Task RecieveData(bool canChangeMode)
         {
-            using (_currentConnection = BlueToothService.CreateConnection(_currentDevice))
+            SystemLogMessage = string.Empty;
+            while (_isRecievingData)
             {
-
-
+                try
                 {
-                    while (_isRecievingData)
+                    using (_currentConnection = BlueToothService.CreateConnection(_currentDevice))
                     {
-                        try
+                        if (await _currentConnection.RetryConnectAsync(retriesCount: 3))
                         {
-                            //Когда первый раз зашли на получение или переподключаемся после передачи данных
-                            if (_needToConnect)
-                            {
-                                if (!await _currentConnection.RetryConnectAsync(retriesCount: 3))
-                                {
-                                    _isRecievingData = false;
-                                    SystemLogMessage = "Ошибка соединения(получ)";
-                                }
-                                _needToConnect = false;
-                            }
                             (_currentParameters, SystemLogMessage) = await Task.Run(() => BlueToothService.RecieveSensorsData(_currentConnection));
                             //Дополнительная проверка на полученные значения, т.к. проверка на соединение не всегда работает
                             double dataSumm = _currentParameters[0] + _currentParameters[1] + _currentParameters[2] + _currentParameters[3] + _currentParameters[4];
@@ -273,27 +255,29 @@ namespace OperationsModule.ViewModels
                                 {
                                     SensorsDataRepository.FloorNumber = floorNum;
                                 }
-                                //Потому допишу. Не знаю чем это будет
+                                //Потом допишу. Не знаю чем это будет
                                 //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
                                 _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
                             }
+                            //Шлем данные, если нужно
+                            if (_needToSendData)
+                            {
+                                bool result = await SendBlueToothCommand(_symbols);
+                            }
                         }
-                        catch (Exception)
-                        {
-                            await _currentConnection.RetryConnectAsync(retriesCount: 3);
-                        }
-                        await Task.Delay(100);
                     }
                 }
-
-
-
+                catch (Exception ex)
+                {
+                    SystemLogMessage = ex.Message;
+                }
+                await Task.Delay(500);
             }
         }
-
-
     }
 
-
 }
+
+
+
 

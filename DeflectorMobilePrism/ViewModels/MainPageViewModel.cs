@@ -42,6 +42,13 @@ namespace DeflectorMobilePrism.ViewModels
             set { SetProperty(ref _availableBondedDevices, value); }
         }
 
+        private BluetoothDeviceModel _selectedBondedDevice;
+        public BluetoothDeviceModel SelectedBondedDevice
+        {
+            get { return _selectedBondedDevice; }
+            set { SetProperty(ref _selectedBondedDevice, value); }
+        }
+
         private ObservableCollection<BluetoothDevice> _availabledevices;
         public ObservableCollection<BluetoothDevice> AvailableDevices
         {
@@ -49,6 +56,26 @@ namespace DeflectorMobilePrism.ViewModels
             set { SetProperty(ref _availabledevices, value); }
         }
 
+        private BluetoothDevice _selectedDevice;
+        public BluetoothDevice SelectedDevice
+        {
+            get { return _selectedDevice; }
+            set { SetProperty(ref _selectedDevice, value); }
+        }
+
+        private bool _enableConnection;
+        public bool EnableConnection
+        {
+            get { return _enableConnection; }
+            set { SetProperty(ref _enableConnection, value); }
+        }
+
+        private string _systemMessage;
+        public string SystemMessage
+        {
+            get { return _systemMessage; }
+            set { SetProperty(ref _systemMessage, value); }
+        }
         #endregion
 
         #region Delegate commands
@@ -57,9 +84,13 @@ namespace DeflectorMobilePrism.ViewModels
         public DelegateCommand<BluetoothDeviceModel> ConnectBondedDeviceCommand =>
             _connectBondedDeviceCommand ?? (_connectBondedDeviceCommand = new DelegateCommand<BluetoothDeviceModel>(ExecuteConnectBondedDeviceCommand));
 
+       
+
         private DelegateCommand<BluetoothDevice> _connectDeviceCommand;
         public DelegateCommand<BluetoothDevice> ConnnectDeviceCommand =>
          _connectDeviceCommand ?? (_connectDeviceCommand = new DelegateCommand<BluetoothDevice>(ExecuteConnnectDeviceCommand));
+
+
 
         private DelegateCommand _scanDevicesCommand;
         public DelegateCommand ScanDevicesCommand =>
@@ -79,6 +110,9 @@ namespace DeflectorMobilePrism.ViewModels
             _bluetoothAdapter = DependencyService.Resolve<IBluetoothAdapter>();
             Device.StartTimer(TimeSpan.FromMilliseconds(500), TimerTickCallBack);
             startConnection = false;
+            EnableConnection = true;
+            ExecuteScanDevicesCommand();
+            SystemMessage = "Выберите подключение";
         }
 
         private bool TimerTickCallBack()
@@ -122,6 +156,8 @@ namespace DeflectorMobilePrism.ViewModels
             //Если нажали кнопку подключиться
             if (startConnection)
             {
+                SystemMessage = "Проверка подключения";
+                EnableConnection = false;
                 _ = TryToConnect();
                 startConnection = false;
             }
@@ -134,14 +170,20 @@ namespace DeflectorMobilePrism.ViewModels
         /// <returns></returns>
         async Task TryToConnect()
         {
+      
             if (await currentConnection.RetryConnectAsync(retriesCount: 3))
-            { 
+            {
                 NavigationParameters parameter = new NavigationParameters();
-            parameter.Add("CurrentDevice", _currentDevice);
-            currentConnection.Dispose();
-            _ = NavigationService.NavigateAsync("ChangeModes", parameter);
-        }
-     
+                parameter.Add("CurrentDevice", _currentDevice);
+                currentConnection.Dispose();
+                EnableConnection = true;
+                _ = NavigationService.NavigateAsync("ChangeModes", parameter);
+            }
+            else
+            {
+                SystemMessage = "Невозможно подключиться";
+                EnableConnection = true;
+            }
         }
 
         #region Execute commands
@@ -164,16 +206,14 @@ namespace DeflectorMobilePrism.ViewModels
                 //Шаманство^^
                 BluetoothDeviceModel currentDevice = new BluetoothDeviceModel(bluetoothDevice.Address, bluetoothDevice.Name);
                 _currentDevice = currentDevice;
-                using (currentConnection = BlueToothService.CreateConnection(currentDevice));
+                using (currentConnection = BlueToothService.CreateConnection(currentDevice)) ;
                 startConnection = true;
             }
         }
 
-
-
-
         void ExecuteScanDevicesCommand()
         {
+            SystemMessage = "Поиск устройств";
             MainActivityModel.BluetoothDevices.Clear();
             AvailableDevices.Clear();
             //Список сопрояженных устройств(уже есть в тлф)

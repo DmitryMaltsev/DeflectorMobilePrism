@@ -52,7 +52,6 @@ namespace Services
 
         public async Task<string> SendMode(IBluetoothConnection connection, string sendingParameters)
         {
-            string message = "";
             using (connection)
             {
 
@@ -61,9 +60,14 @@ namespace Services
                 char[] byteBuffer = sendingParameters.ToCharArray();
                 Encoding utf8 = Encoding.UTF8;
                 byte[] buffer = utf8.GetBytes(byteBuffer);
-                await connection.RetryTransmitAsync(buffer, 0, buffer.Length);
+                if (await connection.RetryTransmitAsync(buffer, 0, buffer.Length))
+                {
+                    return "Работа в норме(отпр)";
+                }
+                else
+                    return "Ошибка соединения(отпр)"; ;
             }
-            return message;
+       
         }
     }
 }

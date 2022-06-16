@@ -5,7 +5,10 @@
              Title="{Binding Title}" Background="#CDBEA7">
 
     <StackLayout x:Name="Stack" HorizontalOptions="CenterAndExpand" VerticalOptions="Start" >
-        <Button Text="Поиск Bluetooth устройств" Command="{Binding ScanDevicesCommand}"/>
+        <Button Text="Искать устройства" Command="{Binding ScanDevicesCommand}" Margin="30,10" CornerRadius="5" FontSize="18"
+                 IsEnabled="{Binding EnableConnection}"/>
+        <Label  Text="{Binding SystemMessage, StringFormat='Статус:{0}'}" FontSize="18" FontAttributes="Bold"    
+                HorizontalOptions="Center"  HorizontalTextAlignment="Center" Margin="15,0"/>
         <!--#region Сопряженные устройства -->
         <Frame BackgroundColor="#882426" CornerRadius="10"   VerticalOptions="Center">
             <Label Text="Сопряженные устройства"  HorizontalOptions="Center" VerticalOptions="Start" FontSize="20"  
@@ -24,7 +27,8 @@
                                        HorizontalOptions="Start" TextColor="White" HorizontalTextAlignment="Center" Margin="15,0"/>
                             <Button Grid.Column="1" Text="Подключиться" BindingContext="{Binding Source={x:Reference BondedList}, Path=BindingContext}"   
                             Command="{Binding ConnectBondedDeviceCommand}" FontSize="11"  HorizontalOptions="Center"
-                             CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
+                             CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"
+                                    IsEnabled="{Binding EnableConnection}"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>
@@ -37,7 +41,6 @@
             <Label Text="Доступные устройства"  HorizontalOptions="Center" VerticalOptions="Start" FontSize="20"  
                     FontFamily="sans-serif-light" FontAttributes="Bold" TextColor="White"/>
         </Frame>
-        
         <ListView x:Name="FoundedList" ItemsSource="{Binding AvailableDevices}" SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -51,8 +54,8 @@
                                        HorizontalOptions="Start" TextColor="White" HorizontalTextAlignment="Center" Margin="15,0"/>
                             <Button Grid.Column="1" Text="Подключиться" BindingContext="{Binding Source={x:Reference FoundedList}, Path=BindingContext}"
                                     Command="{Binding ConnnectDeviceCommand}"  HorizontalOptions="Center" FontSize="11"
-                                      CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"/>
-                                 
+                                      CommandParameter="{Binding Source={x:Reference Item}, Path=BindingContext}"
+                                    IsEnabled="{Binding EnableConnection}" />
                         </Grid>
                     </ViewCell>
                 </DataTemplate>
