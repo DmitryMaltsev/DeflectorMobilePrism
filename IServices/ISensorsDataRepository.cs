@@ -14,5 +14,6 @@ namespace IServices
         bool NumsOn { get; set; }
         int FloorNumber { get; set; }
         int SelectedModeIndex { get; set; }
+        int CurrentFloorNumber { get; set; }
     }
 }

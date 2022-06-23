@@ -39,9 +39,14 @@
             <Label  Grid.Row="1" Grid.Column="3" Text="{Binding SensorsDataRepository.CurrentPressure}"  FontSize="18"  HorizontalOptions="Start" Margin="0,10"/>
      
 
-            <StackLayout  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" HorizontalOptions="Center" Orientation="Horizontal" >
-                <Label  Text="Текущая мощность:" FontSize="18" HorizontalOptions="End"/>
+            <StackLayout  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalOptions="Center" Orientation="Horizontal" >
+                <Label  Text="Мощность:" FontSize="18" HorizontalOptions="End"/>
                 <Label Text="{Binding SensorsDataRepository.CurrentPower,StringFormat='{0}%'}" FontSize="18" HorizontalOptions="Start"/>
+            </StackLayout>
+
+            <StackLayout  Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" HorizontalOptions="Center" Orientation="Horizontal" >
+                <Label  Text="Высота(этажи):" FontSize="18" HorizontalOptions="End"/>
+                <Label Text="{Binding  SensorsDataRepository.CurrentFloorNumber}" FontSize="18" HorizontalOptions="Start"/>
             </StackLayout>
 
             <StackLayout  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" HorizontalOptions="Center" Orientation="Horizontal" >

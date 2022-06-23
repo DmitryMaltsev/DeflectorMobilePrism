@@ -1,4 +1,5 @@
-﻿using Android.Bluetooth;
+﻿
+using Android.Bluetooth;
 
 using System;
 using System.Collections.Generic;

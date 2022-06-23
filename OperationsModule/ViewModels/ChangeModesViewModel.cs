@@ -55,6 +55,9 @@ namespace OperationsModule.ViewModels
                 SetProperty(ref _canChangePower, value);
             }
         }
+
+
+
         #endregion
         public ISensorsDataRepository SensorsDataRepository { get; }
         public IBlueToothService BlueToothService { get; }
@@ -246,6 +249,7 @@ namespace OperationsModule.ViewModels
                                 SensorsDataRepository.CurrentPower = _currentParameters[2];
                                 int modeIndex = Convert.ToInt32(_currentParameters[3]);
                                 int floorNum = Convert.ToInt32(_currentParameters[5]);
+                                SensorsDataRepository.CurrentFloorNumber = floorNum;
                                 //Для отображения начального режима
                                 if (SensorsDataRepository.SelectedModeIndex == -1)
                                 {
@@ -255,6 +259,8 @@ namespace OperationsModule.ViewModels
                                 {
                                     SensorsDataRepository.FloorNumber = floorNum;
                                 }
+                                 
+                     
                                 //Потом допишу. Не знаю чем это будет
                                 //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
                                 _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;

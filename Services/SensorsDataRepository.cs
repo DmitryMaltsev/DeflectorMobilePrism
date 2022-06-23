@@ -16,12 +16,25 @@ namespace Services
             Mode = Modes[0];
         }
 
+        /// <summary>
+        /// Задаваемый номер этажа
+        /// </summary>
         private int _floorNumber=-1;
         public int FloorNumber
         {
             get { return _floorNumber; }
             set { SetProperty(ref _floorNumber, value); }
-        }   
+        }
+
+        /// <summary>
+        /// Номер этажа для отображения
+        /// </summary>
+        private int _currentFloorNumber;
+        public int CurrentFloorNumber
+        {
+            get { return _currentFloorNumber; }
+            set { SetProperty(ref _currentFloorNumber, value); }
+        }
 
         private double _currentTemperature;
         public double CurrentTemperature
