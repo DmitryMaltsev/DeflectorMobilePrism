@@ -114,7 +114,7 @@ namespace OperationsModule.ViewModels
         void ExecuteUnitOnCommand()
         {
 
-            if (SensorsDataRepository.UnitNum < 9 && SensorsDataRepository.DecimalNum < 5)
+            if (SensorsDataRepository.UnitNum < 9 && SensorsDataRepository.DecimalNum < 8)
             {
                 SensorsDataRepository.UnitNum += 1;
             }
@@ -130,11 +130,11 @@ namespace OperationsModule.ViewModels
 
         void ExecuteDecimalOnCommand()
         {
-            if (SensorsDataRepository.DecimalNum < 5)
+            if (SensorsDataRepository.DecimalNum < 8)
             {
                 SensorsDataRepository.DecimalNum += 1;
             }
-            if (SensorsDataRepository.DecimalNum == 5)
+            if (SensorsDataRepository.DecimalNum == 8)
             {
                 SensorsDataRepository.UnitNum = 0;
             }
