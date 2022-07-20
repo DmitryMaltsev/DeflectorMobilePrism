@@ -111,7 +111,7 @@ namespace OperationsModule.ViewModels
 
         #region ExecuteMethods
 
-        void ExecuteUnitOnCommand()
+        void ExecuteUnitOnCommand() 
         {
 
             if (SensorsDataRepository.UnitNum < 9 && SensorsDataRepository.DecimalNum < 8)
