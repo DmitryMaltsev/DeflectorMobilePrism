@@ -248,6 +248,7 @@ namespace OperationsModule.ViewModels
                                 SensorsDataRepository.CurrentPressure = _currentParameters[1];
                                 SensorsDataRepository.CurrentPower = _currentParameters[2];
                                 int modeIndex = Convert.ToInt32(_currentParameters[3]);
+                                SensorsDataRepository.Mode = SensorsDataRepository.Modes[modeIndex];
                                 int floorNum = Convert.ToInt32(_currentParameters[5]);
                                 SensorsDataRepository.CurrentFloorNumber = floorNum;
                                 //Для отображения начального режима
@@ -255,6 +256,7 @@ namespace OperationsModule.ViewModels
                                 {
                                     SensorsDataRepository.SelectedModeIndex = modeIndex;
                                 }
+                                
                                 if (SensorsDataRepository.FloorNumber == -1)
                                 {
                                     SensorsDataRepository.FloorNumber = floorNum;
