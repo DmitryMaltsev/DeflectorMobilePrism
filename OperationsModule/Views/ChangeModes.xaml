@@ -15,10 +15,10 @@
     <StackLayout BackgroundColor="#CDBEA7">
         <!--#region Верхняя шапка -->
 
-        <Grid BackgroundColor="#882426" HeightRequest="450">
+        <Grid BackgroundColor="#882426">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.7*" />
-                <RowDefinition Height="1.3*" />
+                <RowDefinition Height="1.5*" />
                 <RowDefinition Height="1.1*" />
                 <RowDefinition Height="1.1*" />
                 <RowDefinition Height="1.1*" />
@@ -90,10 +90,10 @@
         <!--Margin="100,5,100,5"-->
         <Grid BackgroundColor="#CDBEA7" HorizontalOptions="Center">
             <Grid.RowDefinitions>
+                <RowDefinition Height="0.8*" />
+                <RowDefinition Height="0.8*" />
+                <RowDefinition Height="0.8*" />
                 <RowDefinition Height="1*" />
-                <RowDefinition Height="0.8*" />
-                <RowDefinition Height="0.8*" />
-                <RowDefinition Height="2*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
