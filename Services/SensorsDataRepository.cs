@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Xamarin.Forms;
+
 namespace Services
 {
     public class SensorsDataRepository : BindableBase, ISensorsDataRepository
@@ -19,7 +21,7 @@ namespace Services
         /// <summary>
         /// Задаваемый номер этажа
         /// </summary>
-        private int _floorNumber=-1;
+        private int _floorNumber = -1;
         public int FloorNumber
         {
             get { return _floorNumber; }
@@ -75,7 +77,7 @@ namespace Services
         /// <summary>
         /// Какой индекс режима выбран
         /// </summary>
-        private int _selectedModeIndex=-1;
+        private int _selectedModeIndex = -1;
         public int SelectedModeIndex
         {
             get { return _selectedModeIndex; }
@@ -95,11 +97,25 @@ namespace Services
             set { SetProperty(ref _unitNum, value); }
         }
 
-        private bool _numsOn=false;
+        private bool _numsOn = false;
         public bool NumsOn
         {
             get { return _numsOn; }
             set { SetProperty(ref _numsOn, value); }
+        }
+
+        private System.Drawing.Color _fireAlertColor;
+        public System.Drawing.Color FireAlertColor
+        {
+            get { return _fireAlertColor; }
+            set { SetProperty(ref _fireAlertColor, value); }
+        }
+
+        private System.Drawing.Color _termoreleColor;
+        public System.Drawing.Color TermoreleColor
+        {
+            get { return _termoreleColor; }
+            set { SetProperty(ref _termoreleColor, value); }
         }
     }
 }

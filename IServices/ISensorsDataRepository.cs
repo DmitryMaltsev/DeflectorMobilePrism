@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace IServices
 {
@@ -15,5 +16,7 @@ namespace IServices
         int FloorNumber { get; set; }
         int SelectedModeIndex { get; set; }
         int CurrentFloorNumber { get; set; }
+       Color FireAlertColor { get; set; }
+        Color TermoreleColor { get; set; }
     }
 }

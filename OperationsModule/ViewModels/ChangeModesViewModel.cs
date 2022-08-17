@@ -111,7 +111,7 @@ namespace OperationsModule.ViewModels
 
         #region ExecuteMethods
 
-        void ExecuteUnitOnCommand() 
+        void ExecuteUnitOnCommand()
         {
 
             if (SensorsDataRepository.UnitNum < 9 && SensorsDataRepository.DecimalNum < 8)
@@ -190,9 +190,9 @@ namespace OperationsModule.ViewModels
         {
             try
             {
-                SystemLogMessage= await BlueToothService.SendMode(_currentConnection, symbols);
+                SystemLogMessage = await BlueToothService.SendMode(_currentConnection, symbols);
                 return true;
-            
+
             }
             catch (Exception ex)
             {
@@ -249,22 +249,21 @@ namespace OperationsModule.ViewModels
                                 SensorsDataRepository.CurrentPower = _currentParameters[2];
                                 int modeIndex = Convert.ToInt32(_currentParameters[3]);
                                 SensorsDataRepository.Mode = SensorsDataRepository.Modes[modeIndex];
-                                int floorNum = Convert.ToInt32(_currentParameters[5]);
+                                int floorNum = Convert.ToInt32(_currentParameters[6]);
                                 SensorsDataRepository.CurrentFloorNumber = floorNum;
                                 //Для отображения начального режима
                                 if (SensorsDataRepository.SelectedModeIndex == -1)
                                 {
                                     SensorsDataRepository.SelectedModeIndex = modeIndex;
                                 }
-                                
+
                                 if (SensorsDataRepository.FloorNumber == -1)
                                 {
                                     SensorsDataRepository.FloorNumber = floorNum;
                                 }
-                                 
-                     
-                                //Потом допишу. Не знаю чем это будет
-                                //_ = _currentParameters[4] == 1 ? SystemLogMessage = "Реле замкнуто" : SystemLogMessage = "Реле разомкнуто";
+
+                                _ = _currentParameters[4] == 1 ? SensorsDataRepository.TermoreleColor = Color.Green : SensorsDataRepository.TermoreleColor = Color.Red;
+                                _ = _currentParameters[5] == 1 ? SensorsDataRepository.FireAlertColor = Color.Green : SensorsDataRepository.FireAlertColor = Color.Red;
                                 _ = SensorsDataRepository.Mode == "Ручной" ? SensorsDataRepository.NumsOn = true : SensorsDataRepository.NumsOn = false;
                             }
                             //Шлем данные, если нужно
@@ -275,11 +274,11 @@ namespace OperationsModule.ViewModels
                         }
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    SystemLogMessage = ex.Message;
+                    SystemLogMessage = "Ошибка передачи";
                 }
-                await Task.Delay(500);
+                await Task.Delay(400);
             }
         }
     }

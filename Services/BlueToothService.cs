@@ -28,9 +28,9 @@ namespace Services
 
         public async Task<(double[], string)> RecieveSensorsData(IBluetoothConnection connection)
         {
-            double[] currentParameters = new double[6];
+            double[] currentParameters = new double[7];
             string message = "";
-            byte[] buffer = new byte[25];
+            byte[] buffer = new byte[28];
             if (!(await connection.RetryReciveAsync(buffer, 0, buffer.Length)).Succeeded)
             {
                 message = "Ошибка соединения(получ)";
@@ -45,6 +45,7 @@ namespace Services
                 currentParameters[3] = double.Parse(stringArray[3], NumberStyles.Any, CultureInfo.InvariantCulture);
                 currentParameters[4] = double.Parse(stringArray[4], NumberStyles.Any, CultureInfo.InvariantCulture);
                 currentParameters[5] = double.Parse(stringArray[5], NumberStyles.Any, CultureInfo.InvariantCulture);
+                currentParameters[6] = double.Parse(stringArray[6], NumberStyles.Any, CultureInfo.InvariantCulture);
                 message = "Работа в норме(получ)";
             }
             return (currentParameters, message);
